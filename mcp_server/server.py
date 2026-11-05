@@ -207,8 +207,9 @@ def create_report(
         clicks: Total ad clicks generated.
         leads: Total conversions / qualified leads generated.
         spend: Total advertising spend in USD.
-        summary: Executive analysis of campaign performance, wins, and channel breakdown.
-        recommendations: Actionable strategic recommendations for the next cycle.
+        summary: Executive analysis. Formatting: short paragraphs; optional CAPS headings on their own line
+            (e.g. HEADLINE); numbered points whose first sentence is the key insight (shown in bold); **bold** allowed.
+        recommendations: Numbered, actionable recommendations ("1. Do X. Because Y."); the first sentence of each is shown in bold.
         prev_impressions: Ad impressions in previous comparison period (benchmark).
         prev_clicks: Ad clicks in previous comparison period.
         prev_leads: Leads generated in previous comparison period.

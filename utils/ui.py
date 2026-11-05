@@ -341,7 +341,19 @@ def apply_custom_theme():
         .cp-spark-val { font-weight: 700; text-align: right; min-width: 3rem; }
         .cp-empty { color: #94A3B8; font-size: 0.82rem; padding: 0.8rem 0; }
         .cp-chip { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; }
-        .cp-prose { margin: 0.5rem 0 0; font-size: 0.9rem; line-height: 1.65; color: #334155; white-space: pre-line; }
+        .cp-prose { margin: 0.5rem 0 0; font-size: 0.95rem; line-height: 1.65; color: #334155; }
+        .cp-narrative { min-height: 0; padding: 1.2rem 1.5rem; }
+        .cp-prose-h { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+                      color: #4338CA; margin: 1rem 0 0.35rem; }
+        .cp-prose-h:first-child { margin-top: 0.2rem; }
+        .cp-prose-p { margin: 0 0 0.6rem; }
+        .cp-prose-item { display: grid; grid-template-columns: 1.8rem 1fr; gap: 0.2rem; margin: 0 0 0.65rem;
+                         padding: 0.55rem 0.75rem; background: #F8FAFC; border-left: 3px solid #C7D2FE; border-radius: 0 8px 8px 0; }
+        .cp-prose-item b { color: #1E1B4B; }
+        .cp-prose-marker { font-weight: 800; color: #4F46E5; }
+        .cp-prose-empty { color: #94A3B8; margin: 0.4rem 0 0; }
+        .cp-prose-note { font-size: 0.8rem; color: #64748B; margin: 0 0 0.5rem; font-style: italic; }
+        .cp-prose .cp-table-wrap { margin: 0.3rem 0 0.8rem; }
 
         /* Tables */
         .cp-table-wrap { overflow-x: auto; background: #FFFFFF; border: 1px solid #E5E7F0; border-radius: 14px; margin-bottom: 0.75rem; }
@@ -461,8 +473,7 @@ def render_sidebar_brand():
                   f'style="max-height:44px; max-width:200px; object-fit:contain; background:#FFFFFF; border-radius:8px; padding:4px 8px;"></div>'
                   if brand.get("logo_data_uri") else "")
     icon = "" if brand.get("logo_data_uri") else "⚡"
-    st.sidebar.markdown(
-        f"""
+    html_block = f"""
         <div class="sidebar-brand-box">
             {logo_block}
             <div class="sidebar-brand-title">
@@ -474,9 +485,9 @@ def render_sidebar_brand():
                 <span><strong>DB:</strong> {badge_label}</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """
+    compact = "\n".join(line.strip() for line in html_block.splitlines() if line.strip())
+    st.sidebar.markdown(compact, unsafe_allow_html=True)
 
 
 def get_plotly_layout(title: str = "", height: int = 350) -> Dict[str, Any]:

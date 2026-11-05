@@ -216,6 +216,33 @@ class _ReportPDF:
         self.font(size, False, (51, 65, 85))
         self.pdf.multi_cell(0, 5, _safe(text), new_x="LMARGIN", new_y="NEXT")
 
+    def narrative(self, text: str):
+        """Headings, numbered points with a bold key sentence, and paragraphs."""
+        from utils.narrative import to_pdf_markdown
+        for kind, body in to_pdf_markdown(text):
+            if kind == "heading":
+                self.pdf.ln(1.5)
+                self.font(8.5, True, INDIGO)
+                self.pdf.multi_cell(0, 5, _safe(body.upper()), new_x="LMARGIN", new_y="NEXT")
+            elif kind == "note":
+                self.font(8, False, SLATE)
+                self.pdf.multi_cell(0, 4.4, _safe(body), new_x="LMARGIN", new_y="NEXT")
+                self.pdf.ln(1)
+            elif kind == "table":
+                headers, rows = body
+                self.font(7.5, False, NAVY)
+                with self.pdf.table(text_align="LEFT", line_height=5, borders_layout="HORIZONTAL_LINES",
+                                    first_row_as_headings=bool(headers)) as t:
+                    for r in ([headers] if headers else []) + rows:
+                        row = t.row()
+                        for c in r:
+                            row.cell(_safe(c))
+                self.pdf.ln(2)
+            else:
+                self.font(9.5, False, (51, 65, 85))
+                self.pdf.multi_cell(0, 5.2, _safe(body), markdown=True, new_x="LMARGIN", new_y="NEXT")
+                self.pdf.ln(1.2)
+
 
 def build_report_pdf(
     report: Dict[str, Any],
@@ -404,10 +431,10 @@ def build_report_pdf(
     # Narrative
     if report.get("summary"):
         doc.section("Executive Summary")
-        doc.paragraph(report["summary"])
+        doc.narrative(report["summary"])
     if report.get("recommendations"):
         doc.section("Recommendations")
-        doc.paragraph(report["recommendations"])
+        doc.narrative(report["recommendations"])
 
     pdf.ln(6)
     doc.font(7.5, False, SLATE)

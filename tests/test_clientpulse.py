@@ -361,6 +361,23 @@ class TestClientPulseCore(unittest.TestCase):
         pdf = build_report_pdf(rep, {}, [], None, database.get_branding())
         self.assertTrue(pdf.startswith(b"%PDF"))
 
+    def test_narrative_formatting(self):
+        """Claude's plain-text narrative becomes headings, bold key points, and real tables; HTML is escaped."""
+        from utils.narrative import parse, to_html
+        text = ("HEADLINE\nOctober was the best month.\n"
+                "MONTHLY TREND (weighted by LDAU)\n"
+                "Sep 2026 | LDAU 67,200 | D30 12.0%\nOct 2026 | LDAU 72,200 | D30 12.5%\n"
+                "1. Back the long episodes. They retain best.\nBest value: Full Episode 1 <script>x</script>")
+        kinds = [b[0] for b in parse(text)]
+        self.assertEqual(kinds, ["heading", "para", "heading", "note", "table", "item", "para"])
+        table = parse(text)[4]
+        self.assertEqual(table[1], ["", "LDAU", "D30"])
+        self.assertEqual(table[2][1], ["Oct 2026", "72,200", "12.5%"])
+        out = to_html(text)
+        self.assertIn("<b>Back the long episodes.</b>", out)
+        self.assertIn("<b>Best value:</b>", out)
+        self.assertNotIn("<script>", out)
+
     def test_pdf_export(self):
         """PDF export produces a valid PDF, including non-Latin text and emoji."""
         from utils.pdf_report import build_report_pdf

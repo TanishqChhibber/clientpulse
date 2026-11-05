@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional
 import plotly.graph_objects as go
 import streamlit as st
 
+from utils.narrative import to_html as narrative_html
 from utils.ui import esc, get_plotly_layout, render_html
 
 PALETTE = ["#4F46E5", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444", "#0EA5E9", "#EC4899", "#64748B"]
@@ -589,13 +590,13 @@ def custom_table_html(table: Dict[str, Any], currency: str) -> str:
 
 
 def render_narrative(report: Dict[str, Any]) -> None:
-    c1, c2 = st.columns(2)
-    with c1:
-        render_html(f"""<div class="cp-panel"><div class="cp-panel-title"><span class="cp-dot" style="background:#4F46E5"></span>Executive Summary</div>
-            <p class="cp-prose">{esc(report.get('summary') or 'No summary yet.')}</p></div>""")
-    with c2:
-        render_html(f"""<div class="cp-panel"><div class="cp-panel-title"><span class="cp-dot" style="background:#9333EA"></span>Recommendations</div>
-            <p class="cp-prose">{esc(report.get('recommendations') or 'No recommendations yet.')}</p></div>""")
+    """Summary and recommendations as full-width, formatted sections (headings, bold key points)."""
+    for title, dot, text, empty in [
+        ("Executive Summary", "#4F46E5", report.get("summary"), "No summary yet."),
+        ("Recommendations", "#9333EA", report.get("recommendations"), "No recommendations yet."),
+    ]:
+        render_html(f"""<div class="cp-panel cp-narrative"><div class="cp-panel-title"><span class="cp-dot" style="background:{dot}"></span>{title}</div>
+            <div class="cp-prose">{narrative_html(text or "", empty)}</div></div>""")
 
 
 def render_dashboard_body(report: Dict[str, Any], breakdowns: Dict[str, List[Dict[str, Any]]],
