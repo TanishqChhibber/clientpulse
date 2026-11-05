@@ -106,7 +106,11 @@ with tab_list:
                 )
 
                 # Report Action Buttons
-                bcol1, bcol2, bcol3, bcol4 = st.columns([1.2, 1.2, 1.5, 0.8])
+                bcol0, bcol1, bcol2, bcol3, bcol4 = st.columns([1.1, 1.2, 1.2, 1.5, 0.8])
+                with bcol0:
+                    if st.button("📊 Dashboard", key=f"dash_btn_{rid}"):
+                        st.session_state["dashboard_report_id"] = rid
+                        st.switch_page("pages/0_dashboard.py")
                 with bcol1:
                     if st.button("✏️ Edit in Builder", key=f"edit_btn_{rid}"):
                         st.session_state["edit_report_id"] = rid

@@ -1,0 +1,733 @@
+date,platform,campaign,ad_name,ad_type,impressions,clicks,spend_usd,leads,video_views,video_completion_rate_pct
+2026-09-01,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2500,210,170.47,20,,
+2026-09-01,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1178,100,102.45,8,,
+2026-09-01,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5078,139,446.01,6,,
+2026-09-01,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2488,60,253.37,2,,
+2026-09-01,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12825,58,58.51,1,4355,32.0
+2026-09-01,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17137,94,71.82,2,5037,41.2
+2026-09-01,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,23189,499,291.31,42,7474,62.4
+2026-09-01,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18307,129,220.00,3,6282,19.2
+2026-09-01,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12736,107,121.41,3,3733,23.0
+2026-09-01,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13204,200,154.07,10,4115,44.8
+2026-09-01,Meta,Retargeting,Carousel - Customer Logos,Carousel,7440,156,144.56,14,,
+2026-09-01,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8562,207,154.45,18,3008,64.4
+2026-09-02,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2441,242,219.80,30,,
+2026-09-02,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1010,73,66.79,6,,
+2026-09-02,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4749,162,592.26,6,,
+2026-09-02,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3035,76,337.43,3,,
+2026-09-02,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13012,54,51.93,1,4234,33.0
+2026-09-02,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17456,97,74.66,2,5128,40.8
+2026-09-02,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,18540,401,233.43,29,5414,56.9
+2026-09-02,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21827,153,267.86,4,6302,19.7
+2026-09-02,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12654,121,138.43,4,3734,23.7
+2026-09-02,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14791,262,211.27,13,4733,44.6
+2026-09-02,Meta,Retargeting,Carousel - Customer Logos,Carousel,8990,185,159.79,17,,
+2026-09-02,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9810,206,173.45,20,3314,63.3
+2026-09-03,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2040,185,142.14,25,,
+2026-09-03,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1224,108,98.65,8,,
+2026-09-03,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5789,198,617.41,8,,
+2026-09-03,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2525,69,297.94,2,,
+2026-09-03,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13896,63,57.04,1,4378,29.6
+2026-09-03,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18212,115,75.69,2,6404,45.1
+2026-09-03,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20610,434,220.61,28,6381,58.8
+2026-09-03,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17461,114,166.75,3,5284,20.2
+2026-09-03,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13294,113,128.49,4,4010,22.6
+2026-09-03,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16959,275,205.12,18,5760,44.7
+2026-09-03,Meta,Retargeting,Carousel - Customer Logos,Carousel,7032,131,116.10,11,,
+2026-09-03,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10152,243,213.22,18,3185,61.4
+2026-09-04,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2660,237,188.97,25,,
+2026-09-04,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1074,83,74.90,10,,
+2026-09-04,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5111,172,590.69,6,,
+2026-09-04,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3334,93,417.07,4,,
+2026-09-04,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15464,64,60.63,1,4850,28.8
+2026-09-04,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17346,116,77.39,3,5500,43.5
+2026-09-04,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,23881,561,311.99,47,7114,56.1
+2026-09-04,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21671,154,248.48,4,6320,19.3
+2026-09-04,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12010,123,137.49,5,3520,22.8
+2026-09-04,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15427,257,182.54,12,5321,45.1
+2026-09-04,Meta,Retargeting,Carousel - Customer Logos,Carousel,8226,160,141.67,15,,
+2026-09-04,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9564,242,182.15,25,2900,61.9
+2026-09-05,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2018,182,149.01,23,,
+2026-09-05,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,767,62,64.77,7,,
+2026-09-05,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3627,104,336.99,5,,
+2026-09-05,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2585,73,291.49,2,,
+2026-09-05,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12321,58,56.33,1,4064,28.6
+2026-09-05,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15769,90,65.06,2,4677,41.3
+2026-09-05,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,14819,315,165.36,25,4948,55.2
+2026-09-05,Meta,Prospecting - Video,Studio Product Demo 30s,Video,15812,104,166.02,3,5410,17.8
+2026-09-05,Meta,Prospecting - Video,Founder Talking Head 45s,Video,9379,84,90.79,3,3083,23.1
+2026-09-05,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,12868,208,153.74,9,3767,49.9
+2026-09-05,Meta,Retargeting,Carousel - Customer Logos,Carousel,7175,137,131.55,13,,
+2026-09-05,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,6797,142,109.24,16,2303,66.6
+2026-09-06,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2149,189,152.60,17,,
+2026-09-06,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,953,85,79.24,9,,
+2026-09-06,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3728,127,463.29,7,,
+2026-09-06,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2536,71,263.43,3,,
+2026-09-06,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10636,52,52.39,1,3615,29.8
+2026-09-06,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15641,85,63.93,2,4727,46.2
+2026-09-06,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,16599,332,193.39,22,4805,55.2
+2026-09-06,Meta,Prospecting - Video,Studio Product Demo 30s,Video,14416,109,190.69,2,4743,18.7
+2026-09-06,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10985,105,137.07,3,3845,22.8
+2026-09-06,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13665,206,142.40,11,4572,45.6
+2026-09-06,Meta,Retargeting,Carousel - Customer Logos,Carousel,6603,125,109.92,11,,
+2026-09-06,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7040,170,122.45,19,2270,65.2
+2026-09-07,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2574,254,210.04,22,,
+2026-09-07,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1154,90,82.32,10,,
+2026-09-07,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5542,163,533.06,7,,
+2026-09-07,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2815,69,261.81,2,,
+2026-09-07,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15849,74,75.96,1,4869,31.2
+2026-09-07,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15302,87,60.05,2,5048,43.8
+2026-09-07,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20635,403,220.46,36,6994,54.9
+2026-09-07,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16633,116,190.53,2,5661,19.8
+2026-09-07,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12622,111,125.18,3,3832,23.9
+2026-09-07,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16573,237,174.71,14,4979,48.5
+2026-09-07,Meta,Retargeting,Carousel - Customer Logos,Carousel,7986,142,131.79,9,,
+2026-09-07,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10215,250,184.26,23,3056,67.6
+2026-09-08,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2412,204,164.70,26,,
+2026-09-08,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1085,95,93.27,11,,
+2026-09-08,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5348,183,670.91,8,,
+2026-09-08,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3090,80,349.69,3,,
+2026-09-08,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15668,74,69.94,1,4760,31.7
+2026-09-08,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19435,117,83.98,2,5693,42.5
+2026-09-08,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19561,393,217.89,24,5923,59.8
+2026-09-08,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20176,126,197.87,3,6347,18.1
+2026-09-08,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11712,122,148.86,4,4015,25.0
+2026-09-08,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14461,203,147.74,13,4954,50.4
+2026-09-08,Meta,Retargeting,Carousel - Customer Logos,Carousel,7805,157,142.60,15,,
+2026-09-08,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8703,186,146.89,13,2693,64.8
+2026-09-09,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2331,203,171.42,18,,
+2026-09-09,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1140,82,76.25,8,,
+2026-09-09,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4462,143,450.78,6,,
+2026-09-09,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2508,63,243.40,2,,
+2026-09-09,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15097,65,64.86,1,4591,28.9
+2026-09-09,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15404,93,71.61,2,5077,46.0
+2026-09-09,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,21956,489,293.13,31,6351,54.8
+2026-09-09,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16869,122,197.70,2,5613,19.8
+2026-09-09,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10804,105,132.25,3,3678,25.8
+2026-09-09,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13236,187,134.98,11,4623,46.2
+2026-09-09,Meta,Retargeting,Carousel - Customer Logos,Carousel,8516,145,135.48,14,,
+2026-09-09,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8365,204,174.63,20,2473,67.9
+2026-09-10,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2603,238,199.40,24,,
+2026-09-10,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1101,86,87.41,9,,
+2026-09-10,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4584,157,548.28,8,,
+2026-09-10,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3080,78,334.75,3,,
+2026-09-10,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13034,62,59.35,1,4117,32.1
+2026-09-10,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16749,108,80.60,2,5768,42.2
+2026-09-10,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20777,447,239.90,26,7115,55.0
+2026-09-10,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17359,130,201.36,3,5778,18.3
+2026-09-10,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10236,107,117.76,4,3268,25.0
+2026-09-10,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15857,262,196.14,17,4661,44.9
+2026-09-10,Meta,Retargeting,Carousel - Customer Logos,Carousel,8460,153,139.95,13,,
+2026-09-10,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9588,216,181.30,19,3192,60.7
+2026-09-11,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2221,191,152.37,17,,
+2026-09-11,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1111,96,85.46,8,,
+2026-09-11,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5175,169,629.37,7,,
+2026-09-11,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2711,63,242.50,2,,
+2026-09-11,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12653,50,47.82,1,4433,31.3
+2026-09-11,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19066,104,78.16,2,6555,44.5
+2026-09-11,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20807,430,221.57,25,7245,57.8
+2026-09-11,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20836,142,207.85,3,6072,17.9
+2026-09-11,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12226,110,145.04,3,4119,24.4
+2026-09-11,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16308,243,183.07,13,5158,49.7
+2026-09-11,Meta,Retargeting,Carousel - Customer Logos,Carousel,9176,166,153.02,15,,
+2026-09-11,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10184,259,195.09,21,3363,59.5
+2026-09-12,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1732,147,112.52,16,,
+2026-09-12,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,904,70,62.93,7,,
+2026-09-12,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4413,135,476.20,7,,
+2026-09-12,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2520,67,283.56,3,,
+2026-09-12,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10948,49,47.92,1,3732,28.9
+2026-09-12,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,12956,74,54.38,2,3970,41.4
+2026-09-12,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,17750,390,233.49,29,5672,54.1
+2026-09-12,Meta,Prospecting - Video,Studio Product Demo 30s,Video,13101,90,138.88,2,3849,20.4
+2026-09-12,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10567,102,133.44,4,3497,23.1
+2026-09-12,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10344,175,130.48,11,3585,44.6
+2026-09-12,Meta,Retargeting,Carousel - Customer Logos,Carousel,6563,128,115.01,9,,
+2026-09-12,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7253,160,132.36,18,2241,65.0
+2026-09-13,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1798,189,170.72,21,,
+2026-09-13,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,868,68,62.32,8,,
+2026-09-13,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4040,125,466.49,6,,
+2026-09-13,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2349,59,226.79,2,,
+2026-09-13,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12061,55,54.97,1,3897,33.1
+2026-09-13,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,14132,88,56.94,2,4620,42.2
+2026-09-13,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,15078,320,177.84,19,5299,61.8
+2026-09-13,Meta,Prospecting - Video,Studio Product Demo 30s,Video,15024,95,162.10,2,5015,19.0
+2026-09-13,Meta,Prospecting - Video,Founder Talking Head 45s,Video,8947,91,119.69,2,2892,23.6
+2026-09-13,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13518,216,174.29,14,4132,49.2
+2026-09-13,Meta,Retargeting,Carousel - Customer Logos,Carousel,6236,130,117.18,13,,
+2026-09-13,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7104,155,126.16,18,2268,59.5
+2026-09-14,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2427,221,189.80,25,,
+2026-09-14,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1085,85,75.72,9,,
+2026-09-14,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5312,154,552.46,5,,
+2026-09-14,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3112,84,365.85,3,,
+2026-09-14,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14687,71,73.94,1,4264,31.0
+2026-09-14,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18486,120,90.29,3,5946,43.7
+2026-09-14,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,22401,460,260.83,29,7124,62.4
+2026-09-14,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18079,132,217.53,3,6192,20.1
+2026-09-14,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11568,105,131.51,4,3977,22.2
+2026-09-14,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13057,215,174.82,15,4384,46.5
+2026-09-14,Meta,Retargeting,Carousel - Customer Logos,Carousel,7036,137,132.49,12,,
+2026-09-14,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10052,253,184.02,27,3083,61.7
+2026-09-15,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2144,205,176.55,26,,
+2026-09-15,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,991,73,74.49,7,,
+2026-09-15,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4795,163,514.64,7,,
+2026-09-15,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2685,65,240.35,3,,
+2026-09-15,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15685,73,64.61,1,4864,31.4
+2026-09-15,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18750,110,73.15,3,5639,43.2
+2026-09-15,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20894,411,229.30,32,7344,56.1
+2026-09-15,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21724,157,239.87,3,7210,19.7
+2026-09-15,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10376,101,121.12,4,3178,25.1
+2026-09-15,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15481,238,183.38,14,5130,48.7
+2026-09-15,Meta,Retargeting,Carousel - Customer Logos,Carousel,8382,172,158.77,18,,
+2026-09-15,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9917,217,171.55,21,3320,58.9
+2026-09-16,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2252,226,179.64,20,,
+2026-09-16,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1113,101,96.54,12,,
+2026-09-16,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5715,166,601.05,7,,
+2026-09-16,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3166,87,345.19,3,,
+2026-09-16,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15944,65,67.51,1,5330,33.4
+2026-09-16,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,20523,132,89.92,3,5928,44.3
+2026-09-16,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20715,453,257.74,35,7056,62.1
+2026-09-16,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16767,109,157.83,3,5431,20.3
+2026-09-16,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10996,93,118.83,3,3379,23.6
+2026-09-16,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13378,236,170.07,13,3936,49.9
+2026-09-16,Meta,Retargeting,Carousel - Customer Logos,Carousel,7125,133,123.78,13,,
+2026-09-16,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10771,242,202.98,19,3388,59.0
+2026-09-17,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2392,222,205.74,19,,
+2026-09-17,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1057,85,88.03,10,,
+2026-09-17,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4574,148,507.68,8,,
+2026-09-17,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2777,70,269.20,2,,
+2026-09-17,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15461,68,66.70,1,5043,28.6
+2026-09-17,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19548,110,71.24,2,5715,45.9
+2026-09-17,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19155,374,220.91,26,5697,61.7
+2026-09-17,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16166,122,181.33,2,4915,18.0
+2026-09-17,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12579,105,113.77,4,3814,23.3
+2026-09-17,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13534,193,151.75,11,4543,46.8
+2026-09-17,Meta,Retargeting,Carousel - Customer Logos,Carousel,8667,165,136.89,15,,
+2026-09-17,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10769,220,185.97,24,3460,62.6
+2026-09-18,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2734,232,196.37,24,,
+2026-09-18,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1161,94,96.62,7,,
+2026-09-18,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4546,144,447.07,5,,
+2026-09-18,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3015,79,312.58,4,,
+2026-09-18,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14128,62,60.14,1,4703,32.7
+2026-09-18,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18814,120,87.71,2,5962,42.1
+2026-09-18,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19985,415,224.41,25,6301,59.5
+2026-09-18,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18283,117,203.04,2,6238,17.8
+2026-09-18,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10547,105,133.86,3,3433,24.2
+2026-09-18,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14233,207,150.70,13,4782,49.8
+2026-09-18,Meta,Retargeting,Carousel - Customer Logos,Carousel,8530,180,165.25,15,,
+2026-09-18,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9722,208,171.62,17,2867,66.5
+2026-09-19,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1843,186,160.44,24,,
+2026-09-19,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,971,88,88.92,9,,
+2026-09-19,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4338,119,439.32,6,,
+2026-09-19,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2158,51,217.58,2,,
+2026-09-19,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10661,42,42.85,1,3343,29.2
+2026-09-19,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,14975,79,58.02,1,4715,42.9
+2026-09-19,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,16145,357,207.22,28,4737,53.8
+2026-09-19,Meta,Prospecting - Video,Studio Product Demo 30s,Video,13637,98,162.26,2,4505,19.0
+2026-09-19,Meta,Prospecting - Video,Founder Talking Head 45s,Video,9433,84,105.94,2,2976,23.2
+2026-09-19,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,12642,201,155.79,9,3960,47.7
+2026-09-19,Meta,Retargeting,Carousel - Customer Logos,Carousel,5454,98,83.11,7,,
+2026-09-19,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7042,155,111.79,16,2107,61.8
+2026-09-20,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2037,193,174.99,24,,
+2026-09-20,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,767,68,58.69,5,,
+2026-09-20,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4685,157,541.89,7,,
+2026-09-20,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2465,62,234.64,2,,
+2026-09-20,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10611,51,49.59,1,3680,29.0
+2026-09-20,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15888,89,63.41,2,4978,42.7
+2026-09-20,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,15991,322,165.35,24,4722,58.1
+2026-09-20,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17051,115,192.37,3,5800,18.2
+2026-09-20,Meta,Prospecting - Video,Founder Talking Head 45s,Video,8581,75,91.84,3,2831,22.8
+2026-09-20,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,12982,207,163.15,13,4111,50.2
+2026-09-20,Meta,Retargeting,Carousel - Customer Logos,Carousel,6523,127,117.15,13,,
+2026-09-20,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7890,166,121.33,15,2425,60.7
+2026-09-21,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2080,197,161.10,21,,
+2026-09-21,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,953,84,73.04,9,,
+2026-09-21,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5754,183,623.08,8,,
+2026-09-21,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2947,81,358.39,3,,
+2026-09-21,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15301,71,65.04,1,4554,28.8
+2026-09-21,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15858,104,70.52,3,5079,41.7
+2026-09-21,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19410,401,217.88,30,5787,56.8
+2026-09-21,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17762,121,187.34,3,6012,19.4
+2026-09-21,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10437,89,110.61,2,3489,24.6
+2026-09-21,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16828,293,212.43,17,4998,45.9
+2026-09-21,Meta,Retargeting,Carousel - Customer Logos,Carousel,9122,181,159.38,17,,
+2026-09-21,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10748,235,183.36,25,3654,64.7
+2026-09-22,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2636,264,232.72,29,,
+2026-09-22,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1148,92,84.98,8,,
+2026-09-22,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4701,135,500.10,6,,
+2026-09-22,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2662,63,236.46,3,,
+2026-09-22,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12324,59,59.81,1,3579,30.2
+2026-09-22,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19438,106,72.37,2,6632,45.9
+2026-09-22,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,22946,443,240.61,32,7601,55.6
+2026-09-22,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18681,124,208.26,3,6018,18.4
+2026-09-22,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13111,123,157.49,3,4570,25.9
+2026-09-22,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14827,224,164.03,13,5187,49.4
+2026-09-22,Meta,Retargeting,Carousel - Customer Logos,Carousel,8723,151,129.11,14,,
+2026-09-22,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10566,246,181.16,27,3618,60.8
+2026-09-23,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2589,232,213.19,21,,
+2026-09-23,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1079,97,87.03,9,,
+2026-09-23,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4965,136,421.09,6,,
+2026-09-23,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2670,77,307.80,2,,
+2026-09-23,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15809,76,74.37,2,4692,29.9
+2026-09-23,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19780,124,80.53,3,6264,40.5
+2026-09-23,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,18349,362,212.44,28,6138,58.3
+2026-09-23,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16783,111,170.54,2,5284,19.9
+2026-09-23,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11845,102,132.32,3,3423,24.1
+2026-09-23,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13838,202,149.36,12,4198,46.4
+2026-09-23,Meta,Retargeting,Carousel - Customer Logos,Carousel,8394,143,140.92,10,,
+2026-09-23,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9574,220,193.19,21,2996,62.7
+2026-09-24,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2497,264,213.34,22,,
+2026-09-24,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1195,94,93.46,10,,
+2026-09-24,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5623,184,604.64,6,,
+2026-09-24,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2940,82,314.35,3,,
+2026-09-24,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13851,65,63.38,1,4045,32.4
+2026-09-24,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17771,101,64.25,2,5165,47.1
+2026-09-24,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,21096,495,274.59,33,7092,55.1
+2026-09-24,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18184,135,231.80,3,5381,18.6
+2026-09-24,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13402,134,173.49,4,4694,24.0
+2026-09-24,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14988,264,198.76,17,5013,43.8
+2026-09-24,Meta,Retargeting,Carousel - Customer Logos,Carousel,8245,168,152.58,13,,
+2026-09-24,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8303,198,152.27,20,2617,64.9
+2026-09-25,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2293,193,176.19,20,,
+2026-09-25,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1264,98,102.04,11,,
+2026-09-25,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4537,145,479.52,7,,
+2026-09-25,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3056,88,335.02,3,,
+2026-09-25,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15181,60,52.07,1,4728,30.4
+2026-09-25,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18363,112,81.21,3,5725,45.9
+2026-09-25,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,21465,453,244.07,37,6524,54.4
+2026-09-25,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20343,142,222.06,3,6199,18.3
+2026-09-25,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11806,125,143.57,5,3771,22.6
+2026-09-25,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16587,262,212.17,14,4870,48.4
+2026-09-25,Meta,Retargeting,Carousel - Customer Logos,Carousel,8829,160,139.61,11,,
+2026-09-25,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9620,242,207.20,25,3341,64.4
+2026-09-26,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2089,198,155.56,19,,
+2026-09-26,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,784,68,58.48,7,,
+2026-09-26,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3996,132,453.44,6,,
+2026-09-26,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2032,50,225.48,2,,
+2026-09-26,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,11286,54,54.62,1,3952,31.7
+2026-09-26,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,14183,88,59.68,2,4792,45.0
+2026-09-26,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,15197,354,192.08,32,4430,54.5
+2026-09-26,Meta,Prospecting - Video,Studio Product Demo 30s,Video,13617,87,134.26,2,4223,20.3
+2026-09-26,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10737,110,125.42,4,3470,22.6
+2026-09-26,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,11290,182,136.57,9,3931,44.4
+2026-09-26,Meta,Retargeting,Carousel - Customer Logos,Carousel,6704,134,123.14,14,,
+2026-09-26,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7745,192,139.11,14,2548,63.8
+2026-09-27,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2007,202,168.84,24,,
+2026-09-27,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,879,74,67.34,9,,
+2026-09-27,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4138,137,483.03,5,,
+2026-09-27,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2022,47,190.37,2,,
+2026-09-27,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10205,47,42.98,1,3418,32.8
+2026-09-27,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16453,89,60.69,2,5074,43.8
+2026-09-27,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,15628,308,155.74,21,4885,59.1
+2026-09-27,Meta,Prospecting - Video,Studio Product Demo 30s,Video,14052,106,158.06,2,4566,18.4
+2026-09-27,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10357,98,117.95,3,3187,22.2
+2026-09-27,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13602,217,177.94,10,4224,43.6
+2026-09-27,Meta,Retargeting,Carousel - Customer Logos,Carousel,6390,132,122.47,11,,
+2026-09-27,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7683,191,150.69,21,2570,65.7
+2026-09-28,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2303,213,183.59,20,,
+2026-09-28,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1117,82,77.97,9,,
+2026-09-28,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4856,168,591.81,6,,
+2026-09-28,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3313,83,360.37,3,,
+2026-09-28,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15843,75,66.96,1,5069,28.7
+2026-09-28,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16039,92,64.06,2,5241,44.1
+2026-09-28,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19916,429,220.02,40,6678,56.1
+2026-09-28,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18067,136,219.01,3,5549,20.0
+2026-09-28,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11526,114,149.93,4,3907,24.9
+2026-09-28,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15846,224,167.15,15,5357,49.1
+2026-09-28,Meta,Retargeting,Carousel - Customer Logos,Carousel,8186,163,149.15,12,,
+2026-09-28,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9867,233,199.12,18,3271,58.3
+2026-09-29,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2722,234,179.76,23,,
+2026-09-29,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,984,84,78.37,9,,
+2026-09-29,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5856,197,701.39,6,,
+2026-09-29,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2585,62,245.31,2,,
+2026-09-29,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14107,60,53.27,1,4371,30.3
+2026-09-29,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19468,123,88.57,3,6366,41.8
+2026-09-29,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19403,413,214.65,38,5957,56.0
+2026-09-29,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17331,127,195.76,2,6026,19.9
+2026-09-29,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11184,96,119.27,3,3922,25.2
+2026-09-29,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,17045,292,209.82,15,5688,45.8
+2026-09-29,Meta,Retargeting,Carousel - Customer Logos,Carousel,7861,140,125.47,10,,
+2026-09-29,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9609,243,202.03,19,3146,63.9
+2026-09-30,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2214,218,186.45,26,,
+2026-09-30,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,952,76,75.34,6,,
+2026-09-30,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5622,153,525.44,8,,
+2026-09-30,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2819,80,352.82,3,,
+2026-09-30,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12737,63,57.71,1,4408,29.0
+2026-09-30,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18400,111,81.17,3,6374,41.7
+2026-09-30,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,23408,453,270.06,42,7336,58.0
+2026-09-30,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21488,167,289.97,4,6201,19.2
+2026-09-30,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10586,112,128.61,4,3416,24.0
+2026-09-30,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16973,294,219.09,14,5010,44.5
+2026-09-30,Meta,Retargeting,Carousel - Customer Logos,Carousel,7901,141,118.94,14,,
+2026-09-30,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10328,241,202.72,19,3540,67.0
+2026-10-01,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2635,251,195.72,30,,
+2026-10-01,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,995,76,69.65,6,,
+2026-10-01,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4826,140,641.23,6,,
+2026-10-01,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2727,74,322.06,2,,
+2026-10-01,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14809,59,51.77,1,4649,31.0
+2026-10-01,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,20133,133,89.58,2,6978,42.6
+2026-10-01,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,29324,677,345.06,48,9848,59.0
+2026-10-01,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18520,131,231.53,3,6120,18.1
+2026-10-01,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11090,111,150.67,3,3511,24.8
+2026-10-01,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13101,234,160.12,15,4196,47.5
+2026-10-01,Meta,Retargeting,Carousel - Customer Logos,Carousel,7159,130,117.48,9,,
+2026-10-01,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8660,211,154.99,21,2942,62.5
+2026-10-02,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2409,226,175.11,24,,
+2026-10-02,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1201,105,97.67,12,,
+2026-10-02,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5583,176,697.41,5,,
+2026-10-02,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2520,73,382.72,2,,
+2026-10-02,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15821,63,58.76,1,5331,33.4
+2026-10-02,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18787,116,89.20,3,6456,46.9
+2026-10-02,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,27292,705,400.30,62,9001,56.6
+2026-10-02,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17167,121,216.35,3,5188,17.5
+2026-10-02,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10281,92,120.24,3,3310,25.2
+2026-10-02,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13863,234,167.63,18,4635,44.1
+2026-10-02,Meta,Retargeting,Carousel - Customer Logos,Carousel,8742,162,153.56,17,,
+2026-10-02,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8119,180,132.51,13,2648,65.0
+2026-10-03,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1660,166,138.34,16,,
+2026-10-03,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,805,73,63.20,7,,
+2026-10-03,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3897,129,588.34,4,,
+2026-10-03,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2388,64,297.63,2,,
+2026-10-03,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10001,46,41.26,1,2919,33.2
+2026-10-03,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16040,111,79.66,2,5128,47.3
+2026-10-03,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,25684,662,384.91,52,8081,54.7
+2026-10-03,Meta,Prospecting - Video,Studio Product Demo 30s,Video,14636,108,190.98,2,4496,19.6
+2026-10-03,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10480,109,139.40,4,3392,22.6
+2026-10-03,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,11074,181,139.73,14,3789,43.9
+2026-10-03,Meta,Retargeting,Carousel - Customer Logos,Carousel,6831,120,103.00,11,,
+2026-10-03,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,7834,204,153.02,23,2619,63.6
+2026-10-04,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1908,197,161.86,27,,
+2026-10-04,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,752,69,71.61,5,,
+2026-10-04,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4783,147,607.78,5,,
+2026-10-04,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2114,60,292.43,2,,
+2026-10-04,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10799,48,44.32,1,3464,31.0
+2026-10-04,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,12665,89,61.92,2,4388,43.1
+2026-10-04,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,22094,555,288.23,39,6731,62.0
+2026-10-04,Meta,Prospecting - Video,Studio Product Demo 30s,Video,15560,106,175.34,2,4859,20.0
+2026-10-04,Meta,Prospecting - Video,Founder Talking Head 45s,Video,9597,94,123.13,2,3268,25.8
+2026-10-04,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,12510,219,153.35,15,3738,48.7
+2026-10-04,Meta,Retargeting,Carousel - Customer Logos,Carousel,6377,133,120.71,13,,
+2026-10-04,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,6593,140,119.77,17,2180,65.7
+2026-10-05,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2336,240,193.04,29,,
+2026-10-05,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,938,78,72.22,8,,
+2026-10-05,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5460,173,751.57,6,,
+2026-10-05,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2470,65,282.92,2,,
+2026-10-05,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13053,65,55.79,1,4322,32.5
+2026-10-05,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,20212,115,74.00,2,6069,44.2
+2026-10-05,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,31030,725,390.53,59,9742,58.6
+2026-10-05,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21794,142,261.74,3,7188,20.1
+2026-10-05,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12934,110,135.59,3,3771,22.1
+2026-10-05,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13521,237,175.40,17,4383,49.7
+2026-10-05,Meta,Retargeting,Carousel - Customer Logos,Carousel,7028,134,109.57,10,,
+2026-10-05,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10549,275,218.92,21,3088,67.3
+2026-10-06,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2687,259,199.58,35,,
+2026-10-06,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1038,96,92.79,10,,
+2026-10-06,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5531,167,666.36,5,,
+2026-10-06,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2674,75,353.74,3,,
+2026-10-06,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13293,63,55.54,1,4444,31.0
+2026-10-06,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,20561,115,79.49,3,6369,45.9
+2026-10-06,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,32218,778,451.31,51,9842,62.6
+2026-10-06,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18946,128,247.63,2,6280,19.5
+2026-10-06,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10508,102,136.52,3,3081,22.7
+2026-10-06,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15952,289,227.14,16,4702,43.3
+2026-10-06,Meta,Retargeting,Carousel - Customer Logos,Carousel,7539,138,118.48,10,,
+2026-10-06,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8609,203,164.18,19,2493,61.5
+2026-10-07,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2107,204,167.31,21,,
+2026-10-07,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1031,83,72.30,10,,
+2026-10-07,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5832,201,888.76,5,,
+2026-10-07,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2796,66,305.69,2,,
+2026-10-07,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12165,53,49.56,1,3563,29.8
+2026-10-07,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16631,107,76.31,2,4903,42.6
+2026-10-07,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,32167,765,430.86,76,9942,56.5
+2026-10-07,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20798,158,307.53,2,6416,20.4
+2026-10-07,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10923,99,136.67,3,3349,24.7
+2026-10-07,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14959,268,190.65,15,5089,46.2
+2026-10-07,Meta,Retargeting,Carousel - Customer Logos,Carousel,7073,136,124.66,12,,
+2026-10-07,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10017,242,211.14,23,3339,62.4
+2026-10-08,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2249,223,201.64,28,,
+2026-10-08,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1070,89,86.80,8,,
+2026-10-08,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5447,177,816.15,5,,
+2026-10-08,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3326,86,406.59,3,,
+2026-10-08,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15765,74,70.91,2,4903,33.0
+2026-10-08,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18199,118,75.74,3,6007,43.0
+2026-10-08,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,29600,653,393.89,61,9281,60.3
+2026-10-08,Meta,Prospecting - Video,Studio Product Demo 30s,Video,21654,149,238.96,2,6944,19.1
+2026-10-08,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12289,118,147.44,3,4146,24.3
+2026-10-08,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15002,254,172.39,13,4719,50.5
+2026-10-08,Meta,Retargeting,Carousel - Customer Logos,Carousel,7078,148,123.65,12,,
+2026-10-08,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9372,208,165.83,20,2961,65.0
+2026-10-09,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2269,205,185.06,18,,
+2026-10-09,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1215,105,103.28,8,,
+2026-10-09,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5954,173,705.00,5,,
+2026-10-09,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2952,85,388.01,2,,
+2026-10-09,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12674,58,54.35,1,4148,29.5
+2026-10-09,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18497,113,82.34,2,6217,46.2
+2026-10-09,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,24629,551,325.60,40,7606,57.6
+2026-10-09,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17645,134,239.54,3,5755,19.3
+2026-10-09,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12313,112,151.25,3,4187,24.8
+2026-10-09,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14088,254,174.68,13,4163,45.5
+2026-10-09,Meta,Retargeting,Carousel - Customer Logos,Carousel,7239,143,128.98,12,,
+2026-10-09,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8467,196,146.95,20,2814,64.5
+2026-10-10,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2207,212,179.83,19,,
+2026-10-10,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,831,68,58.83,6,,
+2026-10-10,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3547,100,463.38,4,,
+2026-10-10,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2323,60,300.10,2,,
+2026-10-10,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12342,55,47.89,1,4155,30.0
+2026-10-10,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,13427,85,55.55,2,4505,45.9
+2026-10-10,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,23018,517,262.41,51,7842,56.8
+2026-10-10,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16671,103,191.13,2,5857,17.8
+2026-10-10,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10550,106,128.48,4,3342,23.4
+2026-10-10,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13140,227,187.07,16,3983,49.3
+2026-10-10,Meta,Retargeting,Carousel - Customer Logos,Carousel,6568,120,112.55,11,,
+2026-10-10,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,6838,149,112.21,12,1995,61.5
+2026-10-11,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1793,171,140.22,21,,
+2026-10-11,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,824,65,66.17,8,,
+2026-10-11,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4383,122,581.01,5,,
+2026-10-11,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2611,75,388.32,2,,
+2026-10-11,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12430,52,51.49,1,4185,31.9
+2026-10-11,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,14354,92,61.42,2,4549,44.9
+2026-10-11,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,25266,564,311.17,43,8790,56.8
+2026-10-11,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17253,115,184.10,2,5777,19.7
+2026-10-11,Meta,Prospecting - Video,Founder Talking Head 45s,Video,9480,93,114.14,2,3054,22.9
+2026-10-11,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,11746,192,137.33,14,3636,47.6
+2026-10-11,Meta,Retargeting,Carousel - Customer Logos,Carousel,6526,123,107.24,12,,
+2026-10-11,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,6570,142,120.05,14,1944,66.6
+2026-10-12,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2357,197,182.79,18,,
+2026-10-12,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1162,88,86.11,7,,
+2026-10-12,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5875,172,772.92,5,,
+2026-10-12,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2788,79,355.57,2,,
+2026-10-12,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13183,62,55.77,1,4390,28.5
+2026-10-12,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17874,102,67.49,3,5158,45.4
+2026-10-12,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,31047,859,465.11,60,9082,56.9
+2026-10-12,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20315,128,219.06,3,6029,19.8
+2026-10-12,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12911,111,154.03,3,4156,22.1
+2026-10-12,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15675,271,212.29,18,4666,46.3
+2026-10-12,Meta,Retargeting,Carousel - Customer Logos,Carousel,8447,174,143.66,12,,
+2026-10-12,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10219,249,194.58,30,3148,59.4
+2026-10-13,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2239,191,164.08,22,,
+2026-10-13,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1135,101,99.61,11,,
+2026-10-13,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5447,160,699.91,5,,
+2026-10-13,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3115,77,338.32,3,,
+2026-10-13,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15909,71,62.23,1,5186,31.1
+2026-10-13,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,20579,144,109.55,3,7060,44.5
+2026-10-13,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,27205,703,406.97,74,9176,53.5
+2026-10-13,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16534,109,175.94,2,5596,19.0
+2026-10-13,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12462,118,146.53,4,3654,24.1
+2026-10-13,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15522,258,186.14,16,4672,49.3
+2026-10-13,Meta,Retargeting,Carousel - Customer Logos,Carousel,8087,149,137.70,15,,
+2026-10-13,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10016,214,178.00,23,3427,58.5
+2026-10-14,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2102,196,165.05,23,,
+2026-10-14,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1037,91,90.61,7,,
+2026-10-14,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5524,179,727.80,7,,
+2026-10-14,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2920,81,407.96,2,,
+2026-10-14,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12433,59,53.46,1,4194,28.7
+2026-10-14,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19658,117,74.76,3,6386,41.0
+2026-10-14,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,27968,669,367.92,60,8712,55.7
+2026-10-14,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16736,119,220.98,2,5364,17.6
+2026-10-14,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13306,118,148.21,3,3959,25.7
+2026-10-14,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16608,296,240.38,20,5228,45.7
+2026-10-14,Meta,Retargeting,Carousel - Customer Logos,Carousel,7799,156,133.98,11,,
+2026-10-14,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9137,218,188.42,18,3101,67.9
+2026-10-15,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2726,232,195.82,23,,
+2026-10-15,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1213,97,93.13,7,,
+2026-10-15,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4733,148,619.83,5,,
+2026-10-15,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2868,76,366.10,3,,
+2026-10-15,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12720,62,61.97,1,3668,30.6
+2026-10-15,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16558,100,74.75,3,5776,40.5
+2026-10-15,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,29687,797,458.27,55,9556,55.6
+2026-10-15,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18954,118,230.63,2,5571,20.3
+2026-10-15,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13430,128,168.18,3,4705,22.4
+2026-10-15,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13180,211,168.38,10,4274,46.5
+2026-10-15,Meta,Retargeting,Carousel - Customer Logos,Carousel,9114,162,138.83,13,,
+2026-10-15,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10357,259,216.95,23,3163,58.7
+2026-10-16,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2185,221,191.03,20,,
+2026-10-16,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,989,82,76.44,8,,
+2026-10-16,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5924,170,712.62,5,,
+2026-10-16,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2569,61,305.18,2,,
+2026-10-16,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14826,59,59.82,1,4356,29.8
+2026-10-16,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17221,108,78.28,2,6051,40.7
+2026-10-16,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,27536,674,389.09,51,8744,60.8
+2026-10-16,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16946,104,197.11,2,5022,20.0
+2026-10-16,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11540,113,146.87,3,3514,25.2
+2026-10-16,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,12848,202,163.70,12,3806,50.0
+2026-10-16,Meta,Retargeting,Carousel - Customer Logos,Carousel,8790,160,130.83,14,,
+2026-10-16,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8553,208,177.11,19,2479,64.8
+2026-10-17,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1731,153,121.91,15,,
+2026-10-17,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,981,72,70.03,6,,
+2026-10-17,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3904,118,519.57,3,,
+2026-10-17,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2166,51,231.21,2,,
+2026-10-17,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,11286,52,52.39,1,3965,32.4
+2026-10-17,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,13791,87,60.71,2,4415,43.2
+2026-10-17,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,20501,485,251.76,50,6925,53.9
+2026-10-17,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17441,122,228.46,3,6110,17.8
+2026-10-17,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10051,90,120.88,3,2930,25.9
+2026-10-17,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10989,209,166.07,12,3755,49.6
+2026-10-17,Meta,Retargeting,Carousel - Customer Logos,Carousel,5778,112,106.97,11,,
+2026-10-17,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8543,181,150.61,22,2768,63.6
+2026-10-18,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1740,184,168.34,20,,
+2026-10-18,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,829,69,60.18,6,,
+2026-10-18,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,3809,118,462.99,5,,
+2026-10-18,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2112,50,251.64,2,,
+2026-10-18,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12356,53,45.54,1,4283,32.4
+2026-10-18,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15896,108,82.56,2,5536,43.3
+2026-10-18,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,19965,471,240.21,34,6962,60.7
+2026-10-18,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17300,125,207.74,3,5750,20.3
+2026-10-18,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10426,92,118.28,2,3207,24.7
+2026-10-18,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10658,197,161.01,15,3336,50.7
+2026-10-18,Meta,Retargeting,Carousel - Customer Logos,Carousel,7293,123,112.97,13,,
+2026-10-18,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8665,193,156.42,23,2573,65.5
+2026-10-19,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2211,234,185.69,31,,
+2026-10-19,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,964,84,82.02,10,,
+2026-10-19,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5116,149,616.95,4,,
+2026-10-19,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2688,63,273.57,2,,
+2026-10-19,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14976,74,75.71,1,4676,31.2
+2026-10-19,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15847,99,74.35,2,5260,41.6
+2026-10-19,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,24724,663,349.69,52,8626,54.0
+2026-10-19,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17119,116,215.79,2,5914,17.8
+2026-10-19,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12338,120,151.06,3,4297,22.7
+2026-10-19,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16753,270,186.35,14,5028,48.5
+2026-10-19,Meta,Retargeting,Carousel - Customer Logos,Carousel,8532,171,146.67,13,,
+2026-10-19,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8752,186,150.94,21,2606,61.6
+2026-10-20,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2347,211,185.16,24,,
+2026-10-20,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1000,74,65.67,6,,
+2026-10-20,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4547,152,637.17,5,,
+2026-10-20,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2890,78,345.47,2,,
+2026-10-20,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12676,62,57.36,1,3864,30.8
+2026-10-20,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16521,98,62.59,3,5463,41.1
+2026-10-20,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,27021,676,406.80,61,8739,61.2
+2026-10-20,Meta,Prospecting - Video,Studio Product Demo 30s,Video,20814,142,254.24,3,6626,20.2
+2026-10-20,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11914,101,137.86,3,3814,25.5
+2026-10-20,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16352,300,230.41,15,5501,44.5
+2026-10-20,Meta,Retargeting,Carousel - Customer Logos,Carousel,9162,193,184.42,14,,
+2026-10-20,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9281,248,195.84,30,3045,66.4
+2026-10-21,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2225,232,213.54,20,,
+2026-10-21,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1063,86,78.86,7,,
+2026-10-21,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5134,173,797.32,6,,
+2026-10-21,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2919,74,350.83,2,,
+2026-10-21,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14369,68,70.28,1,4655,29.0
+2026-10-21,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16844,107,72.56,2,5263,43.9
+2026-10-21,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,29276,644,338.29,46,9571,59.8
+2026-10-21,Meta,Prospecting - Video,Studio Product Demo 30s,Video,16371,125,214.73,2,5496,20.3
+2026-10-21,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13429,112,150.45,3,4108,24.0
+2026-10-21,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15882,252,202.94,13,5564,46.6
+2026-10-21,Meta,Retargeting,Carousel - Customer Logos,Carousel,8781,157,138.95,15,,
+2026-10-21,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8610,191,162.70,21,2898,66.7
+2026-10-22,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2631,250,198.01,25,,
+2026-10-22,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1102,84,85.41,10,,
+2026-10-22,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4465,128,595.10,5,,
+2026-10-22,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2682,69,360.65,2,,
+2026-10-22,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13050,63,59.91,1,3861,28.7
+2026-10-22,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,17311,111,72.69,3,5635,42.9
+2026-10-22,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,25488,691,398.97,65,7805,56.9
+2026-10-22,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17078,121,235.11,3,5626,19.5
+2026-10-22,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11168,103,117.62,3,3765,22.1
+2026-10-22,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16851,307,234.91,14,5125,49.3
+2026-10-22,Meta,Retargeting,Carousel - Customer Logos,Carousel,7533,159,147.19,13,,
+2026-10-22,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9147,210,159.67,20,3030,66.3
+2026-10-23,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2325,199,169.54,24,,
+2026-10-23,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1213,98,95.84,10,,
+2026-10-23,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4885,137,545.09,6,,
+2026-10-23,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3022,85,390.41,3,,
+2026-10-23,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15647,67,59.19,1,5407,32.5
+2026-10-23,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19632,126,91.03,3,6560,45.1
+2026-10-23,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,32580,760,411.19,62,9456,59.9
+2026-10-23,Meta,Prospecting - Video,Studio Product Demo 30s,Video,19410,125,232.29,2,6254,19.9
+2026-10-23,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13463,133,168.25,4,4601,25.4
+2026-10-23,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13565,215,149.25,12,4608,49.0
+2026-10-23,Meta,Retargeting,Carousel - Customer Logos,Carousel,7239,143,124.47,10,,
+2026-10-23,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9087,230,176.90,26,2809,60.6
+2026-10-24,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1801,185,156.32,24,,
+2026-10-24,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,902,83,72.09,10,,
+2026-10-24,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4160,140,595.81,4,,
+2026-10-24,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2009,56,250.53,1,,
+2026-10-24,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10894,49,50.34,1,3358,32.1
+2026-10-24,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15605,98,70.40,2,5127,40.5
+2026-10-24,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,21139,556,285.53,54,6750,60.4
+2026-10-24,Meta,Prospecting - Video,Studio Product Demo 30s,Video,13321,95,173.40,2,4659,18.6
+2026-10-24,Meta,Prospecting - Video,Founder Talking Head 45s,Video,8268,72,88.64,2,2551,25.3
+2026-10-24,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10886,199,153.03,11,3618,45.8
+2026-10-24,Meta,Retargeting,Carousel - Customer Logos,Carousel,5687,105,96.18,8,,
+2026-10-24,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8338,189,144.87,21,2719,61.4
+2026-10-25,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2143,227,186.88,30,,
+2026-10-25,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,842,65,67.28,8,,
+2026-10-25,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4039,117,533.17,3,,
+2026-10-25,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2482,65,292.77,2,,
+2026-10-25,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,11705,46,46.99,1,3771,28.8
+2026-10-25,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16537,108,77.92,2,5492,43.4
+2026-10-25,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,21865,547,299.31,39,7269,59.2
+2026-10-25,Meta,Prospecting - Video,Studio Product Demo 30s,Video,14293,103,189.06,2,4670,17.9
+2026-10-25,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10552,90,118.66,2,3115,22.5
+2026-10-25,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10915,178,127.17,11,3284,48.5
+2026-10-25,Meta,Retargeting,Carousel - Customer Logos,Carousel,6007,101,90.83,8,,
+2026-10-25,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8587,197,141.93,21,2971,66.4
+2026-10-26,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2521,219,170.89,24,,
+2026-10-26,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1173,88,79.52,7,,
+2026-10-26,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5962,175,757.37,5,,
+2026-10-26,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2616,60,277.29,2,,
+2026-10-26,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,13213,62,54.13,1,3844,32.7
+2026-10-26,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,18882,109,74.13,2,6189,46.7
+2026-10-26,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,24888,663,341.52,54,8700,55.9
+2026-10-26,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18348,139,261.93,3,6220,17.8
+2026-10-26,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12706,107,147.12,3,3997,24.3
+2026-10-26,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16360,300,210.66,17,5087,43.5
+2026-10-26,Meta,Retargeting,Carousel - Customer Logos,Carousel,8442,173,170.44,12,,
+2026-10-26,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10698,232,182.31,18,3260,61.1
+2026-10-27,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2547,252,225.66,29,,
+2026-10-27,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1121,104,102.16,9,,
+2026-10-27,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5236,170,681.04,6,,
+2026-10-27,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2681,67,334.57,2,,
+2026-10-27,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,15423,70,72.99,1,5076,29.3
+2026-10-27,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19883,135,101.48,2,6351,42.2
+2026-10-27,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,32348,715,371.44,66,10151,55.5
+2026-10-27,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18766,140,246.31,3,5941,17.8
+2026-10-27,Meta,Prospecting - Video,Founder Talking Head 45s,Video,11990,118,137.21,3,3880,22.1
+2026-10-27,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,13159,237,181.98,13,4217,44.8
+2026-10-27,Meta,Retargeting,Carousel - Customer Logos,Carousel,8411,177,154.95,12,,
+2026-10-27,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,8710,206,166.78,21,2772,64.6
+2026-10-28,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2555,220,196.70,21,,
+2026-10-28,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1047,94,97.59,8,,
+2026-10-28,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5234,170,673.71,5,,
+2026-10-28,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2587,70,352.61,2,,
+2026-10-28,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14465,60,61.90,1,4589,32.4
+2026-10-28,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19170,109,74.99,3,6548,44.6
+2026-10-28,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,30664,750,425.57,79,9095,58.0
+2026-10-28,Meta,Prospecting - Video,Studio Product Demo 30s,Video,19173,119,229.97,3,6114,19.0
+2026-10-28,Meta,Prospecting - Video,Founder Talking Head 45s,Video,13516,118,151.39,4,4003,23.6
+2026-10-28,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,15452,296,222.18,17,5418,50.1
+2026-10-28,Meta,Retargeting,Carousel - Customer Logos,Carousel,8629,155,152.43,17,,
+2026-10-28,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9365,204,160.35,22,3145,61.0
+2026-10-29,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2545,262,232.14,35,,
+2026-10-29,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1143,88,85.68,8,,
+2026-10-29,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4958,160,764.58,6,,
+2026-10-29,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,3298,85,425.93,2,,
+2026-10-29,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,12384,53,50.15,1,4095,30.6
+2026-10-29,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,19338,131,87.77,4,6569,44.2
+2026-10-29,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,24312,551,313.37,40,8169,54.9
+2026-10-29,Meta,Prospecting - Video,Studio Product Demo 30s,Video,17783,117,222.12,2,5457,19.8
+2026-10-29,Meta,Prospecting - Video,Founder Talking Head 45s,Video,10316,105,122.09,4,3459,25.4
+2026-10-29,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,16090,287,203.95,20,5456,45.4
+2026-10-29,Meta,Retargeting,Carousel - Customer Logos,Carousel,8394,175,153.96,19,,
+2026-10-29,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,10856,247,199.66,18,3301,64.2
+2026-10-30,Google Ads,Search - Brand,Brand Exact - Main,Search Text,2602,269,243.74,36,,
+2026-10-30,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,1167,101,100.85,10,,
+2026-10-30,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,5361,177,843.18,5,,
+2026-10-30,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2619,71,321.03,2,,
+2026-10-30,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,14058,61,57.12,1,4165,31.4
+2026-10-30,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,16677,100,72.94,2,4967,42.8
+2026-10-30,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,24530,670,377.02,62,7834,58.7
+2026-10-30,Meta,Prospecting - Video,Studio Product Demo 30s,Video,18191,136,232.97,2,5453,17.7
+2026-10-30,Meta,Prospecting - Video,Founder Talking Head 45s,Video,12018,111,141.25,3,3631,22.9
+2026-10-30,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,14243,242,171.28,17,4585,50.7
+2026-10-30,Meta,Retargeting,Carousel - Customer Logos,Carousel,8776,185,150.14,18,,
+2026-10-30,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,9345,245,200.46,25,3264,64.8
+2026-10-31,Google Ads,Search - Brand,Brand Exact - Main,Search Text,1816,189,174.95,20,,
+2026-10-31,Google Ads,Search - Brand,Brand Phrase - Pricing,Search Text,890,70,71.97,8,,
+2026-10-31,Google Ads,Search - Non-Brand,Generic - Project Mgmt Software,Search Text,4003,133,573.43,3,,
+2026-10-31,Google Ads,Search - Non-Brand,Competitor - Alternatives,Search Text,2597,62,299.89,2,,
+2026-10-31,Google Ads,YouTube - Awareness,YT InStream - Founder Story 30s,Video,10082,50,47.86,1,2945,31.8
+2026-10-31,Google Ads,YouTube - Awareness,YT Shorts - Feature Teaser 15s,Video,15581,106,73.08,2,5023,45.4
+2026-10-31,Meta,Prospecting - Video,UGC Testimonial - Priya 15s,Video,25920,684,387.23,72,8703,54.8
+2026-10-31,Meta,Prospecting - Video,Studio Product Demo 30s,Video,15014,100,163.11,1,5087,19.2
+2026-10-31,Meta,Prospecting - Video,Founder Talking Head 45s,Video,9815,87,104.59,2,3222,23.7
+2026-10-31,Meta,Prospecting - Video,Before-After Dashboard 20s,Video,10260,188,141.98,12,3360,48.9
+2026-10-31,Meta,Retargeting,Carousel - Customer Logos,Carousel,6564,130,107.00,14,,
+2026-10-31,Meta,Retargeting,Video - 14-Day Free Trial 10s,Video,6701,171,131.36,13,2258,62.4

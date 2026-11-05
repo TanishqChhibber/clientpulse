@@ -12,6 +12,8 @@ Exposed Tools:
 4. list_reports
 5. update_report
 6. publish_report
+7. set_report_breakdown
+8. get_report
 
 NO AI API keys or embedded models are used. All reasoning is performed by Claude.
 """
@@ -19,9 +21,10 @@ NO AI API keys or embedded models are used. All reasoning is performed by Claude
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+from pydantic import BaseModel, Field
 
 # Ensure clientpulse root directory is on the path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -53,7 +56,10 @@ mcp = FastMCP(
     instructions=(
         "You are connected to ClientPulse, a multi-tenant client reporting platform for digital marketing agencies. "
         "Use these tools to create clients, list clients, generate detailed campaign performance reports with real ROI metrics, "
-        "update report analyses, and publish reports with shareable links for client viewing."
+        "update report analyses, and publish reports with shareable links for client viewing. "
+        "When the user shares raw campaign data (CSV / sheet exports), aggregate it yourself, call create_report "
+        "with the period totals, then call set_report_breakdown once with per-channel, per-campaign, per-creative "
+        "and weekly rows plus 3-5 key insights, so the dashboard charts and tables are populated."
     ),
     auth=_build_auth()
 )
@@ -396,6 +402,117 @@ def publish_report(report_id: str) -> Dict[str, Any]:
         return {"error": True, "message": "Failed to publish report."}
     except Exception as e:
         return {"error": True, "message": f"Failed to publish report: {str(e)}"}
+
+
+# ==============================================================================
+# TOOL 7: set_report_breakdown
+# ==============================================================================
+class BreakdownRow(BaseModel):
+    label: str = Field(description="Row name: channel (e.g. 'Google Search', 'Meta'), campaign name, ad/creative name, or week start date (YYYY-MM-DD) for weekly rows.")
+    platform: Optional[str] = Field(None, description="Ad platform, e.g. 'Google Ads' or 'Meta'.")
+    impressions: int = Field(0, ge=0)
+    clicks: int = Field(0, ge=0)
+    leads: int = Field(0, ge=0)
+    spend: float = Field(0.0, ge=0, description="Spend in USD for this row in the current period.")
+    prev_spend: Optional[float] = Field(None, ge=0, description="Spend in the previous period, if known.")
+    prev_leads: Optional[int] = Field(None, ge=0, description="Leads in the previous period, if known.")
+    video_completion_rate: Optional[float] = Field(None, ge=0, le=100, description="Video completion rate in percent (video creatives only).")
+    verdict: Optional[Literal["scale", "keep", "cut"]] = Field(None, description="Your recommendation for this row (mainly for creatives and campaigns).")
+    note: Optional[str] = Field(None, description="One-line reason for the verdict or a notable observation.")
+
+
+class KeyInsight(BaseModel):
+    text: str = Field(description="Short insight, e.g. 'UGC testimonial video drove 37% of leads at $6.56 CPL'.")
+    impact: str = Field("", description="Optional short metric chip, e.g. '+32%' or '-$41 CPL'.")
+    tone: Literal["positive", "negative", "neutral"] = "neutral"
+
+
+def _as_dicts(items) -> List[Dict[str, Any]]:
+    return [i.model_dump() if hasattr(i, "model_dump") else dict(i) for i in items]
+
+
+@mcp.tool(
+    name="set_report_breakdown",
+    title="Set Report Breakdown",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    description=(
+        "Attach detailed breakdowns to a report so its dashboard shows channel split, per-campaign and per-creative "
+        "tables, weekly trend charts, and key insights. Each list you pass REPLACES that section; omit a list to keep it."
+    )
+)
+def set_report_breakdown(
+    report_id: str,
+    channels: Optional[List[BreakdownRow]] = None,
+    campaigns: Optional[List[BreakdownRow]] = None,
+    creatives: Optional[List[BreakdownRow]] = None,
+    weekly: Optional[List[BreakdownRow]] = None,
+    key_insights: Optional[List[KeyInsight]] = None
+) -> Dict[str, Any]:
+    """
+    Set per-channel, per-campaign, per-creative, and weekly breakdown rows plus key insights for a report.
+
+    Args:
+        report_id: The report to attach the breakdown to.
+        channels: One row per channel (e.g. Google Search, YouTube, Meta Prospecting, Meta Retargeting).
+        campaigns: One row per campaign.
+        creatives: One row per ad / video creative, ideally with verdict ('scale', 'keep', 'cut') and a note.
+        weekly: One row per week in chronological order; label is the week start date (YYYY-MM-DD).
+        key_insights: 3-5 headline insights for the dashboard's insights panel.
+
+    Returns:
+        Counts of rows stored per section.
+    """
+    if not database.get_report_by_id(report_id):
+        return {"error": True, "message": f"Report with ID '{report_id}' not found."}
+
+    sections = {"channel": channels, "campaign": campaigns, "creative": creatives, "week": weekly}
+    if all(v is None for v in sections.values()) and key_insights is None:
+        return {"error": True, "message": "Provide at least one of channels, campaigns, creatives, weekly, or key_insights."}
+
+    try:
+        stored = {}
+        for dimension, rows in sections.items():
+            if rows is not None:
+                stored[dimension] = len(database.set_report_breakdown(report_id, dimension, _as_dicts(rows)))
+        if key_insights is not None:
+            stored["key_insights"] = len(database.set_report_insights(report_id, _as_dicts(key_insights)))
+        return {"success": True, "message": "Report breakdown saved.", "report_id": report_id, "rows_stored": stored}
+    except Exception as e:
+        return {"error": True, "message": f"Failed to save breakdown: {str(e)}"}
+
+
+# ==============================================================================
+# TOOL 8: get_report
+# ==============================================================================
+@mcp.tool(
+    name="get_report",
+    title="Get Report",
+    annotations={"readOnlyHint": True, "openWorldHint": False},
+    description="Retrieve one report with its metrics, narrative, breakdown rows, and key insights."
+)
+def get_report(report_id: str) -> Dict[str, Any]:
+    """
+    Get a full report, e.g. to review or refine it.
+
+    Args:
+        report_id: The report ID.
+
+    Returns:
+        The report record, its breakdowns grouped by section, key insights, and public URL if published.
+    """
+    report = database.get_report_by_id(report_id)
+    if not report:
+        return {"error": True, "message": f"Report with ID '{report_id}' not found."}
+    insights = database.get_report_insights(report)
+    report = {k: v for k, v in report.items() if k != "key_insights"}
+    return {
+        "success": True,
+        "report": report,
+        "breakdowns": database.get_report_breakdowns(report_id),
+        "key_insights": insights,
+        "public_url": f"{database.PUBLIC_APP_URL}/?page=public&token={report['share_token']}"
+        if report.get("status") == "published" else None,
+    }
 
 
 # ==============================================================================

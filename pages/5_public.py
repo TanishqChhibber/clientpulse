@@ -5,13 +5,13 @@ Client-facing campaign reporting view accessible without login via secure
 unique share token.
 """
 
-from typing import Optional
+import re
 
 import streamlit as st
-import streamlit.components.v1 as components
-import plotly.graph_objects as go
 import database
-from utils.ui import apply_custom_theme, get_plotly_layout, esc, build_period_comparison_chart, render_html
+from utils.dashboard import render_dashboard_body
+from utils.pdf_report import build_report_pdf
+from utils.ui import apply_custom_theme, esc, render_html
 
 apply_custom_theme()
 
@@ -66,164 +66,43 @@ if not report:
     st.error("⚠️ Invalid or expired report link. Either this report does not exist or it has not been published yet.")
     st.stop()
 
-# Extract report values
+# ------------------------------------------------------------------------------
+# Client-facing report: same dashboard as the agency view, read-only
+# ------------------------------------------------------------------------------
+breakdowns = database.get_report_breakdowns(report["id"])
+insights = database.get_report_insights(report)
 client_name = report.get("client_name", "Client")
 client_industry = report.get("client_industry", "")
-title = report.get("title", "Campaign Performance Report")
-period_start = report.get("period_start", "")
-period_end = report.get("period_end", "")
 
-spend = float(report.get("spend", 0.0))
-impressions = int(report.get("impressions", 0))
-clicks = int(report.get("clicks", 0))
-leads = int(report.get("leads", 0))
-ctr = float(report.get("ctr", 0.0))
-cpl = float(report.get("cpl", 0.0))
-cvr = float(report.get("conversion_rate", 0.0))
-
-prev_spend = float(report.get("prev_spend", 0.0))
-prev_imp = int(report.get("prev_impressions", 0))
-prev_clicks = int(report.get("prev_clicks", 0))
-prev_leads = int(report.get("prev_leads", 0))
-
-prev_cpl = (prev_spend / prev_leads) if prev_leads > 0 else 0.0
-prev_ctr = (prev_clicks / prev_imp * 100) if prev_imp > 0 else 0.0
-
-delta_spend = ((spend - prev_spend) / prev_spend * 100) if prev_spend > 0 else None
-delta_leads = ((leads - prev_leads) / prev_leads * 100) if prev_leads > 0 else None
-delta_cpl = ((cpl - prev_cpl) / prev_cpl * 100) if prev_cpl > 0 else None
-delta_ctr = ((ctr - prev_ctr) / prev_ctr * 100) if prev_ctr > 0 else None
-
-
-def render_public_metric(label: str, value: str, delta, higher_is_better: Optional[bool]):
-    """Metric card with a vs-previous-period delta; higher_is_better=None renders it neutral."""
-    if delta is None:
-        delta_class, delta_text = "cp-delta-neutral", "No previous period data"
-    else:
-        if higher_is_better is None:
-            delta_class = "cp-delta-neutral"
-        else:
-            is_good = delta >= 0 if higher_is_better else delta <= 0
-            delta_class = "cp-delta-positive" if is_good else "cp-delta-negative"
-        delta_text = f"{delta:+.1f}% vs prev period"
-    st.markdown(
-        f"""
-        <div class="cp-metric-card">
-            <div class="cp-metric-label">{label}</div>
-            <div class="cp-metric-value">{value}</div>
-            <div class="cp-metric-delta {delta_class}">{delta_text}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# ------------------------------------------------------------------------------
-# Client Facing Presentation
-# ------------------------------------------------------------------------------
-render_html(
-    f"""
-    <div class="public-report-hero">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div>
-                <div class="public-report-agency">⚡ ClientPulse &bull; Campaign Performance Report</div>
-                <h1 class="public-report-title">{esc(title)}</h1>
-                <div class="public-report-meta">
-                    <strong>Client:</strong> {esc(client_name)} &nbsp;&bull;&nbsp; 
-                    {f"<strong>Industry:</strong> {esc(client_industry)} &nbsp;&bull;&nbsp; " if client_industry else ""}
-                    <strong>Reporting Period:</strong> {esc(period_start)} to {esc(period_end)}
-                </div>
-            </div>
-            <div style="text-align:right;">
-                <span class="cp-badge cp-badge-published">Official Agency Report</span>
+hero_col, pdf_col = st.columns([4, 1], vertical_alignment="center")
+with hero_col:
+    render_html(f"""
+        <div class="public-report-hero" style="margin-bottom:1rem;">
+            <div class="public-report-agency">⚡ ClientPulse &bull; Campaign Performance Report</div>
+            <h1 class="public-report-title">{esc(report.get('title'))}</h1>
+            <div class="public-report-meta">
+                <strong>Client:</strong> {esc(client_name)} &nbsp;&bull;&nbsp;
+                {f"<strong>Industry:</strong> {esc(client_industry)} &nbsp;&bull;&nbsp; " if client_industry else ""}
+                <strong>Reporting Period:</strong> {esc(report.get('period_start'))} to {esc(report.get('period_end'))}
             </div>
         </div>
-    </div>
-    """
-)
-
-# Metric Cards
-mcol1, mcol2, mcol3, mcol4 = st.columns(4)
-
-with mcol1:
-    # Spend going up is neither good nor bad on its own, so keep it neutral
-    render_public_metric("Ad Spend", f"${spend:,.2f}", delta_spend, higher_is_better=None)
-with mcol2:
-    render_public_metric("Qualified Leads", f"{leads:,}", delta_leads, higher_is_better=True)
-with mcol3:
-    render_public_metric("Cost Per Lead (CPL)", f"${cpl:.2f}", delta_cpl, higher_is_better=False)
-with mcol4:
-    render_public_metric("Click-Through Rate", f"{ctr:.2f}%", delta_ctr, higher_is_better=True)
-
-st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
-
-# Visual Chart Section
-chart_col1, chart_col2 = st.columns(2)
-
-with chart_col1:
-    st.markdown("##### 📊 Campaign Conversion Funnel")
-    fig_funnel = go.Figure(go.Funnel(
-        y=["Impressions", "Clicks", "Conversions (Leads)"],
-        x=[impressions, clicks, leads],
-        textinfo="value+percent initial",
-        marker={"color": ["#818CF8", "#6366F1", "#10B981"]}
-    ))
-    layout_f = get_plotly_layout("", height=320)
-    fig_funnel.update_layout(layout_f)
-    st.plotly_chart(fig_funnel, width="stretch")
-
-with chart_col2:
-    st.markdown("##### ⚖️ Current vs. Previous Period Comparison")
-    fig_bar = build_period_comparison_chart([
-        ("Previous", {"spend": prev_spend, "clicks": prev_clicks, "leads": prev_leads}, "#CBD5E1"),
-        ("Current", {"spend": spend, "clicks": clicks, "leads": leads}, "#4F46E5"),
-    ])
-    st.plotly_chart(fig_bar, width="stretch")
-
-# ------------------------------------------------------------------------------
-# Qualitative Narrative & Recommendations
-# ------------------------------------------------------------------------------
-st.markdown("---")
-st.markdown("### 📋 Executive Performance Summary")
-st.markdown(
-    f"""
-    <div class="public-narrative-card">
-        <p style="margin:0; font-size:1rem; line-height:1.7; color:#334155; white-space:pre-line;">{esc(report.get('summary') or 'No summary provided.')}</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown("### 💡 Strategic Next Steps & Recommendations")
-st.markdown(
-    f"""
-    <div class="public-recommendations-card">
-        <p style="margin:0; font-size:1rem; line-height:1.7; color:#334155; white-space:pre-line;">{esc(report.get('recommendations') or 'No recommendations provided.')}</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
-
-# Footer & Print button
-fcol1, fcol2 = st.columns([3, 1])
-with fcol1:
-    st.markdown(
-        """
-        <div style="font-size:0.85rem; color:#94A3B8; border-top:1px solid #E2E8F0; padding-top:1rem;">
-            Prepared by your Digital Marketing Agency &bull; Powered by <strong>ClientPulse</strong>
-        </div>
-        """,
-        unsafe_allow_html=True
+    """)
+with pdf_col:
+    pdf_name = re.sub(r"[^A-Za-z0-9]+", "-", f"{client_name} {report.get('title', 'report')}").strip("-").lower()
+    st.download_button(
+        "⬇ Download PDF",
+        data=lambda: build_report_pdf(report, breakdowns, insights),
+        file_name=f"{pdf_name}.pdf",
+        mime="application/pdf",
+        on_click="ignore",
+        type="primary",
+        width="stretch",
     )
-with fcol2:
-    # st.markdown strips inline event handlers, so the button lives in a small same-origin iframe
-    print_button_html = """
-        <button onclick="window.parent.print()" style="float:right; background:#F1F5F9; border:1px solid #CBD5E1; border-radius:8px; padding:0.4rem 0.8rem; font-size:0.85rem; font-weight:600; cursor:pointer; color:#334155; font-family:Inter, sans-serif;">
-            🖨️ Print / Save as PDF
-        </button>
-    """
-    if hasattr(st, "iframe"):
-        st.iframe(print_button_html, height=45)
-    else:
-        components.html(print_button_html, height=45)
+
+render_dashboard_body(report, breakdowns, insights, show_insights=True, key_suffix="public", client_view=True)
+
+render_html("""
+    <div style="font-size:0.85rem; color:#94A3B8; border-top:1px solid #E2E8F0; padding-top:1rem; margin-top:1rem;">
+        Prepared by your Digital Marketing Agency &bull; Powered by <strong>ClientPulse</strong>
+    </div>
+""")

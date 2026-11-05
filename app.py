@@ -75,13 +75,32 @@ if APP_PASSWORD and not st.session_state.get("agency_authenticated"):
 # ------------------------------------------------------------------------------
 render_sidebar_brand()
 
+dashboard_page = st.Page("pages/0_dashboard.py", title="Brand Dashboard", icon="📈", default=True)
 pages = [
-    st.Page("pages/1_overview.py", title="Overview Dashboard", icon="📊", default=True),
+    dashboard_page,
+    st.Page("pages/1_overview.py", title="Agency Overview", icon="📊"),
     st.Page("pages/2_clients.py", title="Client Management", icon="👥"),
     st.Page("pages/3_create_report.py", title="Create & Edit Report", icon="📝"),
     st.Page("pages/4_history.py", title="Report History", icon="📂"),
     st.Page("pages/5_public.py", title="Public Shareable View", icon="🌐"),
 ]
-
 nav = st.navigation(pages)
+
+
+def _open_brand(client_id: str):
+    st.session_state["brand_id"] = client_id
+    st.session_state["_goto_dashboard"] = True
+
+
+# Sidebar: quick brand switcher, like the "Active clients" list in the agency mockup
+active_clients = database.get_clients(status="active")
+if active_clients:
+    st.sidebar.markdown('<div class="cp-side-heading">Active clients</div>', unsafe_allow_html=True)
+    for client in active_clients[:8]:
+        st.sidebar.button(f"●  {client['name']}", key=f"side_brand_{client['id']}", width="stretch",
+                          on_click=_open_brand, args=(client["id"],))
+
+if st.session_state.pop("_goto_dashboard", False) and nav is not dashboard_page:
+    st.switch_page(dashboard_page)
+
 nav.run()

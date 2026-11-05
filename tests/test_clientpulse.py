@@ -29,7 +29,9 @@ from mcp_server.server import (
     create_report,
     list_reports,
     update_report,
-    publish_report
+    publish_report,
+    set_report_breakdown,
+    get_report
 )
 
 
@@ -205,6 +207,63 @@ class TestClientPulseCore(unittest.TestCase):
         self.assertTrue(res.get("success"))
         self.assertEqual(res["report"]["period_start"], "2026-01-01")
         self.assertEqual(res["report"]["prev_leads"], 10)
+
+    def test_seeded_reports_have_breakdowns(self):
+        """Demo reports come with breakdown rows that add up to the report totals."""
+        rep = database.get_reports()[0]
+        bd = database.get_report_breakdowns(rep["id"])
+        for dim in database.BREAKDOWN_DIMENSIONS:
+            self.assertTrue(bd[dim], f"no {dim} rows")
+        self.assertEqual(sum(r["leads"] for r in bd["channel"]), rep["leads"])
+        self.assertAlmostEqual(sum(r["spend"] for r in bd["week"]), rep["spend"], places=0)
+        self.assertEqual(len(database.get_report_insights(rep)), 4)
+
+    def test_breakdown_validation_and_replace(self):
+        """Breakdown rows are validated, replaced per dimension, and removed with the report."""
+        rep = database.get_reports()[0]
+        with self.assertRaises(ValueError):
+            database.set_report_breakdown(rep["id"], "channel", [{"label": "X", "spend": -1}])
+        with self.assertRaises(ValueError):
+            database.set_report_breakdown(rep["id"], "creative", [{"label": "X", "verdict": "maybe"}])
+        with self.assertRaises(ValueError):
+            database.set_report_breakdown(rep["id"], "region", [{"label": "X"}])
+
+        database.set_report_breakdown(rep["id"], "channel", [{"label": "Only Channel", "spend": 10, "leads": 2}])
+        bd = database.get_report_breakdowns(rep["id"])
+        self.assertEqual([r["label"] for r in bd["channel"]], ["Only Channel"])
+        self.assertTrue(bd["creative"])  # other dimensions untouched
+
+        database.delete_report(rep["id"])
+        self.assertEqual(database.get_report_breakdowns(rep["id"])["creative"], [])
+
+    def test_mcp_breakdown_and_get_report(self):
+        """MCP set_report_breakdown stores rows and insights; get_report returns them."""
+        rep = database.get_reports()[0]
+        res = set_report_breakdown(
+            report_id=rep["id"],
+            creatives=[{"label": "Video A", "platform": "Meta", "spend": 100, "leads": 20, "verdict": "scale",
+                        "video_completion_rate": 55}],
+            key_insights=[{"text": "Video A wins", "impact": "+20%", "tone": "positive"}],
+        )
+        self.assertTrue(res.get("success"), res)
+        self.assertEqual(res["rows_stored"], {"creative": 1, "key_insights": 1})
+
+        full = get_report(report_id=rep["id"])
+        self.assertEqual(full["breakdowns"]["creative"][0]["label"], "Video A")
+        self.assertEqual(full["key_insights"][0]["tone"], "positive")
+        self.assertTrue(full["breakdowns"]["channel"])  # untouched sections kept
+
+        self.assertTrue(set_report_breakdown(report_id=rep["id"]).get("error"))
+        self.assertTrue(set_report_breakdown(report_id="missing", weekly=[]).get("error"))
+
+    def test_pdf_export(self):
+        """PDF export produces a valid PDF, including non-Latin text and emoji."""
+        from utils.pdf_report import build_report_pdf
+        rep = database.get_reports()[0]
+        rep = dict(rep, summary="Growth “up” — ₹ budget 🚀")
+        pdf = build_report_pdf(rep, database.get_report_breakdowns(rep["id"]), database.get_report_insights(rep))
+        self.assertTrue(pdf.startswith(b"%PDF"))
+        self.assertGreater(len(pdf), 20000)
 
 
 if __name__ == "__main__":

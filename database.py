@@ -9,6 +9,7 @@ Both backends share identical function signatures, schema validation,
 and return clean Python dictionaries.
 """
 
+import json
 import logging
 import os
 import sqlite3
@@ -140,7 +141,31 @@ def init_sqlite_schema():
         CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
         CREATE INDEX IF NOT EXISTS idx_reports_share_token ON reports(share_token);
         CREATE INDEX IF NOT EXISTS idx_activity_created_at ON activity_logs(created_at DESC);
+
+        CREATE TABLE IF NOT EXISTS report_breakdowns (
+            id TEXT PRIMARY KEY,
+            report_id TEXT NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+            dimension TEXT NOT NULL CHECK (dimension IN ('channel', 'campaign', 'creative', 'week')),
+            label TEXT NOT NULL,
+            platform TEXT,
+            impressions INTEGER NOT NULL DEFAULT 0,
+            clicks INTEGER NOT NULL DEFAULT 0,
+            leads INTEGER NOT NULL DEFAULT 0,
+            spend REAL NOT NULL DEFAULT 0.0,
+            prev_spend REAL,
+            prev_leads INTEGER,
+            video_completion_rate REAL,
+            verdict TEXT CHECK (verdict IS NULL OR verdict IN ('scale', 'keep', 'cut')),
+            note TEXT,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_breakdowns_report ON report_breakdowns(report_id, dimension);
         """)
+        # Migration for databases created before key_insights existed
+        report_columns = {row["name"] for row in conn.execute("PRAGMA table_info(reports)")}
+        if "key_insights" not in report_columns:
+            conn.execute("ALTER TABLE reports ADD COLUMN key_insights TEXT")
     conn.close()
 
 
@@ -625,7 +650,7 @@ def update_report(report_id: str, **fields) -> Optional[Dict[str, Any]]:
     allowed = {
         "title", "period_start", "period_end", "impressions", "clicks",
         "leads", "spend", "prev_impressions", "prev_clicks", "prev_leads",
-        "prev_spend", "summary", "recommendations", "status"
+        "prev_spend", "summary", "recommendations", "status", "key_insights"
     }
     update_data = {k: v for k, v in fields.items() if k in allowed and v is not None}
     if not update_data:
@@ -714,6 +739,158 @@ def delete_report(report_id: str) -> bool:
 
     log_activity("report_deleted", "report", report_id, f"Report '{title}' deleted.")
     return True
+
+
+# ==============================================================================
+# Report Breakdowns (per channel / campaign / creative / week) & Key Insights
+# ==============================================================================
+
+BREAKDOWN_DIMENSIONS = ("channel", "campaign", "creative", "week")
+VERDICTS = ("scale", "keep", "cut")
+INSIGHT_TONES = ("positive", "negative", "neutral")
+
+
+def _clean_breakdown_row(row: Dict[str, Any], index: int) -> Dict[str, Any]:
+    """Validate one breakdown row and coerce it to storage types."""
+    label = str(row.get("label") or "").strip()
+    if not label:
+        raise ValueError(f"Row {index + 1}: 'label' is required.")
+
+    def number(key, cast, optional=False):
+        value = row.get(key)
+        if value is None or value == "":
+            return None if optional else cast(0)
+        value = cast(float(value))
+        if value < 0:
+            raise ValueError(f"Row {index + 1} ('{label}'): '{key}' cannot be negative.")
+        return value
+
+    verdict = row.get("verdict")
+    verdict = str(verdict).strip().lower() if verdict not in (None, "") else None
+    if verdict is not None and verdict not in VERDICTS:
+        raise ValueError(f"Row {index + 1} ('{label}'): verdict must be one of {', '.join(VERDICTS)}.")
+
+    return {
+        "label": label,
+        "platform": str(row.get("platform") or "").strip() or None,
+        "impressions": number("impressions", int),
+        "clicks": number("clicks", int),
+        "leads": number("leads", int),
+        "spend": round(number("spend", float), 2),
+        "prev_spend": number("prev_spend", float, optional=True),
+        "prev_leads": number("prev_leads", int, optional=True),
+        "video_completion_rate": number("video_completion_rate", float, optional=True),
+        "verdict": verdict,
+        "note": str(row.get("note") or "").strip() or None,
+    }
+
+
+def set_report_breakdown(report_id: str, dimension: str, rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Replace all breakdown rows of one dimension for a report."""
+    if dimension not in BREAKDOWN_DIMENSIONS:
+        raise ValueError(f"dimension must be one of {', '.join(BREAKDOWN_DIMENSIONS)}.")
+    if not get_report_by_id(report_id):
+        raise ValueError(f"Report with id '{report_id}' does not exist.")
+
+    now_iso = get_current_utc_iso()
+    records = []
+    for i, row in enumerate(rows or []):
+        clean = _clean_breakdown_row(row, i)
+        clean.update({
+            "id": f"brk_{uuid.uuid4().hex[:12]}",
+            "report_id": report_id,
+            "dimension": dimension,
+            "sort_order": i,
+            "created_at": now_iso,
+        })
+        records.append(clean)
+
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            table = _supabase_client.table("report_breakdowns")
+            table.delete().eq("report_id", report_id).eq("dimension", dimension).execute()
+            if records:
+                table.insert(records).execute()
+            log_activity("report_breakdown_updated", "report", report_id,
+                         f"{dimension.title()} breakdown updated ({len(records)} rows).")
+            return records
+        except Exception as e:
+            _warn_supabase_fallback("set_report_breakdown", e)
+
+    conn = get_sqlite_conn()
+    with conn:
+        conn.execute("DELETE FROM report_breakdowns WHERE report_id = ? AND dimension = ?", (report_id, dimension))
+        conn.executemany("""
+            INSERT INTO report_breakdowns (
+                id, report_id, dimension, label, platform, impressions, clicks, leads, spend,
+                prev_spend, prev_leads, video_completion_rate, verdict, note, sort_order, created_at
+            ) VALUES (
+                :id, :report_id, :dimension, :label, :platform, :impressions, :clicks, :leads, :spend,
+                :prev_spend, :prev_leads, :video_completion_rate, :verdict, :note, :sort_order, :created_at
+            )
+        """, records)
+    conn.close()
+
+    log_activity("report_breakdown_updated", "report", report_id,
+                 f"{dimension.title()} breakdown updated ({len(records)} rows).")
+    return records
+
+
+def get_report_breakdowns(report_id: str) -> Dict[str, List[Dict[str, Any]]]:
+    """Return a report's breakdown rows grouped by dimension (every dimension key is present)."""
+    rows: List[Dict[str, Any]] = []
+    fetched = False
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            res = (_supabase_client.table("report_breakdowns").select("*")
+                   .eq("report_id", report_id).order("sort_order").execute())
+            rows = res.data or []
+            fetched = True
+        except Exception as e:
+            _warn_supabase_fallback("query", e)
+
+    if not fetched:
+        conn = get_sqlite_conn()
+        cursor = conn.execute(
+            "SELECT * FROM report_breakdowns WHERE report_id = ? ORDER BY dimension, sort_order", (report_id,)
+        )
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+
+    grouped: Dict[str, List[Dict[str, Any]]] = {d: [] for d in BREAKDOWN_DIMENSIONS}
+    for r in rows:
+        grouped.setdefault(r["dimension"], []).append(r)
+    return grouped
+
+
+def set_report_insights(report_id: str, insights: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Store the key insight bullets shown in the dashboard's insights panel."""
+    clean = []
+    for i, item in enumerate(insights or []):
+        text = str(item.get("text") or "").strip()
+        if not text:
+            raise ValueError(f"Insight {i + 1}: 'text' is required.")
+        tone = str(item.get("tone") or "neutral").strip().lower()
+        if tone not in INSIGHT_TONES:
+            raise ValueError(f"Insight {i + 1}: tone must be one of {', '.join(INSIGHT_TONES)}.")
+        clean.append({"text": text, "impact": str(item.get("impact") or "").strip(), "tone": tone})
+    if update_report(report_id, key_insights=json.dumps(clean)) is None:
+        raise ValueError(f"Report with id '{report_id}' does not exist.")
+    return clean
+
+
+def get_report_insights(report: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Parse a report's stored key insights (empty list if none or unreadable)."""
+    raw = report.get("key_insights")
+    if not raw:
+        return []
+    if isinstance(raw, list):
+        return raw
+    try:
+        parsed = json.loads(raw)
+        return parsed if isinstance(parsed, list) else []
+    except (TypeError, ValueError):
+        return []
 
 
 # ==============================================================================
@@ -812,6 +989,97 @@ def get_dashboard_metrics() -> Dict[str, Any]:
 # ==============================================================================
 # Explicit Demo Seeder
 # ==============================================================================
+
+def _split(total: float, weights: List[float], as_int: bool = True) -> List[float]:
+    """Split a total across weights; integer splits put the rounding remainder on the largest share."""
+    wsum = sum(weights) or 1
+    parts = [total * w / wsum for w in weights]
+    if not as_int:
+        return [round(p, 2) for p in parts]
+    ints = [int(p) for p in parts]
+    ints[weights.index(max(weights))] += int(round(total)) - sum(ints)
+    return ints
+
+
+def _demo_breakdowns(report: Dict[str, Any], seed: int) -> Dict[str, Any]:
+    """
+    Deterministically derive channel / campaign / creative / weekly rows and insights
+    from a demo report's totals, so seeded dashboards are fully populated.
+    Rows sum to the report totals. Templated text only (no AI).
+    """
+    import random
+    rng = random.Random(seed)
+
+    def rows_for(templates):
+        # template: (label, platform, spend_share, cpl_multiplier, ctr_multiplier, extra)
+        spend_w = [t[2] * rng.uniform(0.9, 1.1) for t in templates]
+        lead_w = [w / t[3] for w, t in zip(spend_w, templates)]
+        click_w = [w * t[4] for w, t in zip(spend_w, templates)]
+        spend = _split(report["spend"], spend_w, as_int=False)
+        leads = _split(report["leads"], lead_w)
+        clicks = _split(report["clicks"], click_w)
+        imps = _split(report["impressions"], spend_w)
+        prev_spend = _split(report["prev_spend"], [w * rng.uniform(0.85, 1.15) for w in spend_w], as_int=False)
+        prev_leads = _split(report["prev_leads"], [w * rng.uniform(0.85, 1.15) for w in lead_w])
+        out = []
+        for i, t in enumerate(templates):
+            row = {"label": t[0], "platform": t[1], "impressions": imps[i], "clicks": clicks[i], "leads": leads[i],
+                   "spend": spend[i], "prev_spend": prev_spend[i], "prev_leads": prev_leads[i]}
+            row.update(t[5] if len(t) > 5 else {})
+            out.append(row)
+        return out
+
+    channels = rows_for([
+        ("Google Search", "Google Ads", 0.40, 1.15, 2.4), ("YouTube", "Google Ads", 0.10, 2.4, 0.4),
+        ("Meta Prospecting", "Meta", 0.34, 0.85, 1.0), ("Meta Retargeting", "Meta", 0.16, 0.6, 1.3),
+    ])
+    campaigns = rows_for([
+        ("Search - Brand", "Google Ads", 0.14, 0.45, 3.5), ("Search - Non-Brand", "Google Ads", 0.26, 2.2, 1.8),
+        ("YouTube - Awareness", "Google Ads", 0.10, 2.4, 0.4), ("Prospecting - Video", "Meta", 0.34, 0.85, 1.0),
+        ("Retargeting", "Meta", 0.16, 0.6, 1.3),
+    ])
+    creatives = rows_for([
+        ("UGC Testimonial 15s", "Meta", 0.24, 0.55, 1.4, {"video_completion_rate": 58.0}),
+        ("Before/After Demo 20s", "Meta", 0.18, 0.9, 1.1, {"video_completion_rate": 46.0}),
+        ("Free Trial Offer 10s", "Meta", 0.14, 0.7, 1.3, {"video_completion_rate": 63.0}),
+        ("Founder Story 45s", "Meta", 0.14, 1.6, 0.7, {"video_completion_rate": 24.0}),
+        ("Studio Product Demo 30s", "Meta", 0.18, 2.8, 0.5, {"video_completion_rate": 19.0}),
+        ("YouTube Shorts Teaser 15s", "Google Ads", 0.12, 1.9, 0.4, {"video_completion_rate": 44.0}),
+    ])
+    avg_cpl = report["spend"] / report["leads"] if report["leads"] else 0
+    ranked = sorted(creatives, key=lambda r: r["spend"] / r["leads"] if r["leads"] else 1e9)
+    for rank, row in enumerate(ranked):
+        cpl = row["spend"] / row["leads"] if row["leads"] else 0
+        row["verdict"] = "scale" if rank < 2 else ("cut" if rank == len(ranked) - 1 else "keep")
+        row["note"] = f"CPL ${cpl:,.2f} vs ${avg_cpl:,.2f} account average."
+
+    start, end = date.fromisoformat(report["period_start"]), date.fromisoformat(report["period_end"])
+    week_starts = []
+    d = start
+    while d <= end:
+        week_starts.append(d)
+        d = date.fromordinal(d.toordinal() + 7)
+    trend = [(1 + 0.04 * i) * rng.uniform(0.92, 1.08) for i in range(len(week_starts))]
+    weekly = [{"label": ws.isoformat(), "impressions": im, "clicks": cl, "leads": ld, "spend": sp}
+              for ws, im, cl, ld, sp in zip(week_starts, _split(report["impressions"], trend), _split(report["clicks"], trend),
+                                            _split(report["leads"], [t * rng.uniform(0.9, 1.1) for t in trend]),
+                                            _split(report["spend"], trend, as_int=False))]
+
+    best, worst = ranked[0], ranked[-1]
+    best_ch = min(channels, key=lambda r: r["spend"] / r["leads"] if r["leads"] else 1e9)
+    lead_delta = (report["leads"] - report["prev_leads"]) / report["prev_leads"] * 100 if report["prev_leads"] else 0
+    insights = [
+        {"text": f"{best['label']} is the top creative at ${best['spend'] / max(best['leads'], 1):,.2f} CPL. Scale its budget.",
+         "impact": f"{best['leads'] / max(report['leads'], 1) * 100:.0f}% of leads", "tone": "positive"},
+        {"text": f"{worst['label']} has the highest CPL (${worst['spend'] / max(worst['leads'], 1):,.2f}). Cut it and reallocate.",
+         "impact": f"-${worst['spend']:,.0f}", "tone": "negative"},
+        {"text": f"{best_ch['label']} is the most efficient channel.",
+         "impact": f"${best_ch['spend'] / max(best_ch['leads'], 1):,.2f} CPL", "tone": "positive"},
+        {"text": f"Leads changed {lead_delta:+.0f}% versus the previous period.",
+         "impact": f"{lead_delta:+.0f}%", "tone": "positive" if lead_delta >= 0 else "negative"},
+    ]
+    return {"channel": channels, "campaign": campaigns, "creative": creatives, "week": weekly, "insights": insights}
+
 
 def seed_demo_data(force: bool = False) -> Dict[str, int]:
     """
@@ -949,8 +1217,12 @@ def seed_demo_data(force: bool = False) -> Dict[str, int]:
         }
     ]
 
-    for rep in demo_reports:
-        create_report(**rep)
+    for i, rep in enumerate(demo_reports):
+        created = create_report(**rep)
+        demo = _demo_breakdowns(created, seed=i + 1)
+        for dimension in BREAKDOWN_DIMENSIONS:
+            set_report_breakdown(created["id"], dimension, demo[dimension])
+        set_report_insights(created["id"], demo["insights"])
 
     log_activity("database_seeded", "system", "all", "Sample agency demo data loaded successfully.")
     return {

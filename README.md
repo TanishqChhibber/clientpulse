@@ -205,6 +205,8 @@ ClientPulse exposes **6 core tools** over Streamable HTTP transport:
 | `list_reports` | `client_id`, `status`, `search` | Lists campaign reports |
 | `update_report` | `report_id`, optional `title`, `summary`, `recommendations`, `period_start`, `period_end`, current & `prev_*` metrics, `status` | Updates report and recalculates derived metrics |
 | `publish_report` | `report_id` | Marks report published and returns public share URL |
+| `set_report_breakdown` | `report_id`, optional `channels`, `campaigns`, `creatives`, `weekly`, `key_insights` | Fills the dashboard's channel split, creative/campaign tables (with Scale/Keep/Cut verdicts), weekly trends and insights panel |
+| `get_report` | `report_id` | Returns a report with its breakdowns and insights so Claude can review or refine it |
 
 ---
 
@@ -287,9 +289,9 @@ python run.py test
 
 Expected output:
 ```
-.......
+...........
 ----------------------------------------------------------------------
-Ran 7 tests in 0.08s
+Ran 11 tests in 1.2s
 
 OK
 ```
