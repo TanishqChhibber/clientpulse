@@ -63,7 +63,7 @@ with tab_dir:
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="display:flex; align-items:center; gap:0.6rem;">
-                                    <h4 style="margin:0; font-size:1.15rem; color:#1E1B4B; font-weight:700;">{esc(c_name)}</h4>
+                                    <div style="margin:0; font-size:1.15rem; color:#1E1B4B; font-weight:700;">{esc(c_name)}</div>
                                     <span style="background:{status_badge_bg}; color:{status_badge_color}; padding:0.2rem 0.5rem; border-radius:9999px; font-size:0.7rem; font-weight:700; text-transform:uppercase;">
                                         {esc(c_status)}
                                     </span>
@@ -84,6 +84,11 @@ with tab_dir:
                     </div>
                     """
                 )
+
+                if st.button(f"📊 Open {c_name} dashboard", key=f"dash_client_{cid}", disabled=report_count == 0,
+                             help=None if report_count else "This brand has no reports yet."):
+                    st.session_state["brand_id"] = cid
+                    st.switch_page("pages/0_dashboard.py")
 
                 # Edit and Delete controls
                 exp_col1, exp_col2 = st.columns([1, 1])

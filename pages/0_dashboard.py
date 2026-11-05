@@ -38,6 +38,21 @@ if handoff_id:
         st.session_state["brand_id"] = handoff["client_id"]
         st.session_state[f"report_for_{handoff['client_id']}"] = handoff_id
 
+def brand_slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+# Deep link: ?brand=<slug or client id>, e.g. /?brand=my-brand. Applied once per link value,
+# so later dropdown changes are not overridden by the stale URL.
+link_brand = st.query_params.get("brand")
+if link_brand and not handoff_id and st.session_state.get("_brand_link_applied") != link_brand:
+    match = next((cid for cid, name in client_names.items() if link_brand in (cid, brand_slug(name))), None)
+    st.session_state["_brand_link_applied"] = link_brand
+    if match:
+        st.session_state["brand_id"] = match
+    else:
+        st.warning(f"No brand matches '{link_brand}'. Showing the latest report instead.")
+
 if st.session_state.get("brand_id") not in client_ids:
     latest = database.get_reports()
     st.session_state["brand_id"] = latest[0]["client_id"] if latest else client_ids[0]
@@ -45,6 +60,12 @@ if st.session_state.get("brand_id") not in client_ids:
 head_left, head_right = st.columns([3, 1.1], vertical_alignment="bottom")
 with head_right:
     brand_id = st.selectbox("Brand", options=client_ids, format_func=lambda cid: client_names[cid], key="brand_id")
+
+# Keep the address bar in sync so the current brand's URL can be bookmarked or shared with the team
+current_slug = brand_slug(client_names[brand_id])
+if st.query_params.get("brand") != current_slug:
+    st.query_params["brand"] = current_slug
+    st.session_state["_brand_link_applied"] = current_slug
 
 reports = database.get_reports(client_id=brand_id)
 if not reports:
@@ -92,6 +113,8 @@ with head_left:
 # ------------------------------------------------------------------------------
 with ctrl_share:
     with st.popover("🔗 Share", width="stretch"):
+        st.markdown("**Agency dashboard link** (login required)")
+        st.code(f"{database.PUBLIC_APP_URL}/?brand={current_slug}", language=None)
         if status == "published":
             share_url = f"{database.PUBLIC_APP_URL}/?page=public&token={report['share_token']}"
             st.markdown("**Client link** (no login needed)")

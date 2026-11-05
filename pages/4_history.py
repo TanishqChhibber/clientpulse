@@ -81,7 +81,7 @@ with tab_list:
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
-                                    <h4 style="margin:0; font-size:1.15rem; color:#1E1B4B; font-weight:700;">{safe_title}</h4>
+                                    <div style="margin:0; font-size:1.15rem; color:#1E1B4B; font-weight:700;">{safe_title}</div>
                                     <span style="background:{badge_bg}; color:{badge_color}; padding:0.2rem 0.55rem; border-radius:9999px; font-size:0.7rem; font-weight:700; text-transform:uppercase;">
                                         {safe_status}
                                     </span>
