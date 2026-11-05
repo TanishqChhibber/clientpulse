@@ -115,11 +115,11 @@ with tab_list:
                 with bcol0:
                     if st.button("📊 Dashboard", key=f"dash_btn_{rid}"):
                         st.session_state["dashboard_report_id"] = rid
-                        st.switch_page("pages/0_dashboard.py")
+                        st.switch_page("views/0_dashboard.py")
                 with bcol1:
                     if st.button("✏️ Edit in Builder", key=f"edit_btn_{rid}"):
                         st.session_state["edit_report_id"] = rid
-                        st.switch_page("pages/3_create_report.py")
+                        st.switch_page("views/3_create_report.py")
 
                 with bcol2:
                     if rstatus == "draft":

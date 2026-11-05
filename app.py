@@ -45,7 +45,7 @@ if query_token or query_page == "public":
     # Directly execute the public report page
     import importlib.util
     import os
-    public_page_path = os.path.join(os.path.dirname(__file__), "pages", "5_public.py")
+    public_page_path = os.path.join(os.path.dirname(__file__), "views", "5_public.py")
     spec = importlib.util.spec_from_file_location("public_page", public_page_path)
     public_mod = importlib.util.module_from_spec(spec)
     # Public visitors may only view the report their token points to (no report picker)
@@ -75,14 +75,15 @@ if APP_PASSWORD and not st.session_state.get("agency_authenticated"):
 # ------------------------------------------------------------------------------
 render_sidebar_brand()
 
-dashboard_page = st.Page("pages/0_dashboard.py", title="Brand Dashboard", icon="📈", default=True)
+dashboard_page = st.Page("views/0_dashboard.py", title="Brand Dashboard", icon="📈", default=True)
 pages = [
     dashboard_page,
-    st.Page("pages/1_overview.py", title="Agency Overview", icon="📊"),
-    st.Page("pages/2_clients.py", title="Client Management", icon="👥"),
-    st.Page("pages/3_create_report.py", title="Create & Edit Report", icon="📝"),
-    st.Page("pages/4_history.py", title="Report History", icon="📂"),
-    st.Page("pages/5_public.py", title="Public Shareable View", icon="🌐"),
+    st.Page("views/1_overview.py", title="Agency Overview", icon="📊"),
+    st.Page("views/2_clients.py", title="Client Management", icon="👥"),
+    st.Page("views/3_create_report.py", title="Create & Edit Report", icon="📝"),
+    st.Page("views/4_history.py", title="Report History", icon="📂"),
+    st.Page("views/5_public.py", title="Public Shareable View", icon="🌐"),
+    st.Page("views/6_branding.py", title="Agency Branding", icon="🎨"),
 ]
 nav = st.navigation(pages)
 

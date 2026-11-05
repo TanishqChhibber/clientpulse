@@ -47,6 +47,20 @@ def _warn_supabase_fallback(operation: str, exc: Exception) -> None:
     logger.warning("Supabase %s failed, falling back to local SQLite: %s", operation, exc)
 
 
+def _raise_supabase_write_error(operation: str, exc: Exception) -> None:
+    """
+    Fail loudly when a Supabase write fails. Falling back to the host's local SQLite file would
+    silently split data between services (and that file is wiped on redeploy).
+    """
+    logger.error("Supabase %s failed: %s", operation, exc)
+    raise RuntimeError(f"Could not save to the database ({operation}): {exc}") from exc
+
+
+def _matches(row: Dict[str, Any], term: str, fields) -> bool:
+    term = term.lower()
+    return any(term in str(row.get(f) or "").lower() for f in fields)
+
+
 # ==============================================================================
 # Supabase Client Initialization
 # ==============================================================================
@@ -161,13 +175,31 @@ def init_sqlite_schema():
             created_at TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_breakdowns_report ON report_breakdowns(report_id, dimension);
+
+        CREATE TABLE IF NOT EXISTS datasets (
+            id TEXT PRIMARY KEY,
+            client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            columns TEXT,
+            row_count INTEGER NOT NULL DEFAULT 0,
+            csv_text TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_datasets_client ON datasets(client_id);
+
+        CREATE TABLE IF NOT EXISTS app_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            updated_at TEXT NOT NULL
+        );
         """)
         # Migration for databases created before key_insights existed
         report_columns = {row["name"] for row in conn.execute("PRAGMA table_info(reports)")}
         if "key_insights" not in report_columns:
             conn.execute("ALTER TABLE reports ADD COLUMN key_insights TEXT")
-        if "dashboard_spec" not in report_columns:
-            conn.execute("ALTER TABLE reports ADD COLUMN dashboard_spec TEXT")
+        for column in ("dashboard_spec", "source_dataset_id", "computation"):
+            if column not in report_columns:
+                conn.execute(f"ALTER TABLE reports ADD COLUMN {column} TEXT")
     conn.close()
 
 
@@ -280,9 +312,7 @@ def create_client(
             if res.data:
                 client_data = res.data[0]
         except Exception as e:
-            # Fallback to sqlite if remote execution fails
-            _warn_supabase_fallback("create_client", e)
-            _insert_client_sqlite(client_data)
+            _raise_supabase_write_error("create_client", e)
     else:
         _insert_client_sqlite(client_data)
 
@@ -307,10 +337,11 @@ def get_clients(status: Optional[str] = None, search: Optional[str] = None) -> L
             query = _supabase_client.table("clients").select("*").order("created_at", desc=True)
             if status and status != "all":
                 query = query.eq("status", status)
-            if search:
-                query = query.ilike("name", f"%{search}%")
             res = query.execute()
-            return res.data or []
+            rows = res.data or []
+            if search:
+                rows = [r for r in rows if _matches(r, search, ("name", "industry", "email"))]
+            return rows
         except Exception as e:
             _warn_supabase_fallback("query", e)
 
@@ -367,7 +398,7 @@ def update_client(client_id: str, **fields) -> Optional[Dict[str, Any]]:
                 log_activity("client_updated", "client", client_id, f"Client {client_id} updated.")
                 return res.data[0]
         except Exception as e:
-            _warn_supabase_fallback("query", e)
+            _raise_supabase_write_error("update_client", e)
 
     conn = get_sqlite_conn()
     set_clause = ", ".join([f"{k} = ?" for k in update_data.keys()])
@@ -396,7 +427,7 @@ def delete_client(client_id: str) -> bool:
             log_activity("client_deleted", "client", client_id, f"Client '{client_name}' and reports deleted.")
             return True
         except Exception as e:
-            _warn_supabase_fallback("query", e)
+            _raise_supabase_write_error("delete_client", e)
 
     conn = get_sqlite_conn()
     with conn:
@@ -489,8 +520,7 @@ def create_report(
             if res.data:
                 report_data = res.data[0]
         except Exception as e:
-            _warn_supabase_fallback("create_report", e)
-            _insert_report_sqlite(report_data)
+            _raise_supabase_write_error("create_report", e)
     else:
         _insert_report_sqlite(report_data)
 
@@ -537,8 +567,6 @@ def get_reports(
                 query = query.eq("client_id", client_id)
             if status and status != "all":
                 query = query.eq("status", status)
-            if search:
-                query = query.ilike("title", f"%{search}%")
             res = query.execute()
             reports = []
             for r in (res.data or []):
@@ -547,6 +575,8 @@ def get_reports(
                 r_dict["client_name"] = client_info.get("name", "Unknown Client")
                 r_dict["client_industry"] = client_info.get("industry", "")
                 reports.append(r_dict)
+            if search:
+                reports = [r for r in reports if _matches(r, search, ("title", "client_name", "summary"))]
             return reports
         except Exception as e:
             _warn_supabase_fallback("query", e)
@@ -652,7 +682,8 @@ def update_report(report_id: str, **fields) -> Optional[Dict[str, Any]]:
     allowed = {
         "title", "period_start", "period_end", "impressions", "clicks",
         "leads", "spend", "prev_impressions", "prev_clicks", "prev_leads",
-        "prev_spend", "summary", "recommendations", "status", "key_insights", "dashboard_spec"
+        "prev_spend", "summary", "recommendations", "status", "key_insights", "dashboard_spec",
+        "source_dataset_id", "computation"
     }
     update_data = {k: v for k, v in fields.items() if k in allowed and v is not None}
     if not update_data:
@@ -683,7 +714,7 @@ def update_report(report_id: str, **fields) -> Optional[Dict[str, Any]]:
                 log_activity("report_updated", "report", report_id, f"Report '{report_id}' updated.")
                 return get_report_by_id(report_id)
         except Exception as e:
-            _warn_supabase_fallback("query", e)
+            _raise_supabase_write_error("update_report", e)
 
     conn = get_sqlite_conn()
     set_clause = ", ".join([f"{k} = ?" for k in update_data.keys()])
@@ -732,7 +763,7 @@ def delete_report(report_id: str) -> bool:
             log_activity("report_deleted", "report", report_id, f"Report '{title}' deleted.")
             return True
         except Exception as e:
-            _warn_supabase_fallback("query", e)
+            _raise_supabase_write_error("delete_report", e)
 
     conn = get_sqlite_conn()
     with conn:
@@ -817,7 +848,7 @@ def set_report_breakdown(report_id: str, dimension: str, rows: List[Dict[str, An
                          f"{dimension.title()} breakdown updated ({len(records)} rows).")
             return records
         except Exception as e:
-            _warn_supabase_fallback("set_report_breakdown", e)
+            _raise_supabase_write_error("set_report_breakdown", e)
 
     conn = get_sqlite_conn()
     with conn:
@@ -1032,6 +1063,226 @@ def get_dashboard_spec(report: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 
 # ==============================================================================
+# App Settings (agency branding, per-client report templates)
+# ==============================================================================
+
+def get_setting(key: str, default: Optional[str] = None) -> Optional[str]:
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            res = _supabase_client.table("app_settings").select("value").eq("key", key).limit(1).execute()
+            return res.data[0]["value"] if res.data else default
+        except Exception as e:
+            _warn_supabase_fallback("query", e)
+            return default
+    conn = get_sqlite_conn()
+    row = conn.execute("SELECT value FROM app_settings WHERE key = ?", (key,)).fetchone()
+    conn.close()
+    return row["value"] if row else default
+
+
+def set_setting(key: str, value: Optional[str]) -> None:
+    record = {"key": key, "value": value, "updated_at": get_current_utc_iso()}
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            _supabase_client.table("app_settings").upsert(record).execute()
+            return
+        except Exception as e:
+            _raise_supabase_write_error("set_setting", e)
+    conn = get_sqlite_conn()
+    with conn:
+        conn.execute("""
+            INSERT INTO app_settings (key, value, updated_at) VALUES (:key, :value, :updated_at)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+        """, record)
+    conn.close()
+
+
+BRANDING_DEFAULTS = {
+    "agency_name": "ClientPulse",
+    "agency_tagline": "Agency Performance & Reporting Platform",
+    "brand_color": "#4F46E5",
+    "logo_data_uri": "",
+    "report_footer": "Prepared by your digital marketing agency",
+    "show_powered_by": True,
+}
+
+
+def get_branding() -> Dict[str, Any]:
+    """Agency white-label settings (name, logo, colour, footer) with defaults."""
+    raw = get_setting("branding")
+    stored = {}
+    if raw:
+        try:
+            stored = json.loads(raw)
+        except ValueError:
+            stored = {}
+    return {**BRANDING_DEFAULTS, **{k: v for k, v in stored.items() if k in BRANDING_DEFAULTS}}
+
+
+def save_branding(values: Dict[str, Any]) -> Dict[str, Any]:
+    clean = {**get_branding(), **{k: v for k, v in values.items() if k in BRANDING_DEFAULTS}}
+    clean["agency_name"] = str(clean["agency_name"] or "").strip() or BRANDING_DEFAULTS["agency_name"]
+    color = str(clean["brand_color"] or "").strip()
+    if not (len(color) == 7 and color.startswith("#") and all(c in "0123456789abcdefABCDEF" for c in color[1:])):
+        raise ValueError("Brand colour must be a hex value like #4F46E5.")
+    logo = str(clean.get("logo_data_uri") or "")
+    if logo and (not logo.startswith("data:image/") or len(logo) > 700_000):
+        raise ValueError("Logo must be a PNG or JPG image under 500 KB.")
+    clean["show_powered_by"] = bool(clean["show_powered_by"])
+    set_setting("branding", json.dumps(clean))
+    log_activity("branding_updated", "settings", "branding", f"Agency branding updated ({clean['agency_name']}).")
+    return clean
+
+
+def get_report_template(client_id: str) -> Optional[Dict[str, Any]]:
+    raw = get_setting(f"template:{client_id}")
+    try:
+        return json.loads(raw) if raw else None
+    except ValueError:
+        return None
+
+
+def save_report_template(client_id: str, recipe: Dict[str, Any]) -> None:
+    """Remember a client's recipe (minus periods and verdicts) so next month's report is one click."""
+    template = {k: v for k, v in recipe.items() if k not in ("period", "compare_period", "verdicts")}
+    set_setting(f"template:{client_id}", json.dumps(template))
+
+
+# ==============================================================================
+# Datasets (raw CSV data the app computes reports from)
+# ==============================================================================
+
+def create_dataset(client_id: str, name: str, csv_text: str) -> Dict[str, Any]:
+    from utils.compute import load_csv
+    if not get_client_by_id(client_id):
+        raise ValueError(f"Client with id '{client_id}' does not exist.")
+    df = load_csv(csv_text)
+    record = {
+        "id": f"ds_{uuid.uuid4().hex[:12]}",
+        "client_id": client_id,
+        "name": (name or "data.csv").strip(),
+        "columns": json.dumps(list(df.columns)),
+        "row_count": int(len(df)),
+        "csv_text": csv_text,
+        "created_at": get_current_utc_iso(),
+    }
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            _supabase_client.table("datasets").insert(record).execute()
+        except Exception as e:
+            _raise_supabase_write_error("create_dataset", e)
+    else:
+        conn = get_sqlite_conn()
+        with conn:
+            conn.execute("""
+                INSERT INTO datasets (id, client_id, name, columns, row_count, csv_text, created_at)
+                VALUES (:id, :client_id, :name, :columns, :row_count, :csv_text, :created_at)
+            """, record)
+        conn.close()
+    log_activity("dataset_uploaded", "dataset", record["id"], f"Dataset '{record['name']}' uploaded ({record['row_count']} rows).")
+    return {k: v for k, v in record.items() if k != "csv_text"}
+
+
+def list_datasets(client_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    cols = "id, client_id, name, columns, row_count, created_at"
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            query = _supabase_client.table("datasets").select(cols).order("created_at", desc=True)
+            if client_id:
+                query = query.eq("client_id", client_id)
+            return query.execute().data or []
+        except Exception as e:
+            _warn_supabase_fallback("query", e)
+            return []
+    conn = get_sqlite_conn()
+    sql, params = f"SELECT {cols} FROM datasets", []
+    if client_id:
+        sql += " WHERE client_id = ?"
+        params.append(client_id)
+    rows = [dict(r) for r in conn.execute(sql + " ORDER BY created_at DESC", params).fetchall()]
+    conn.close()
+    return rows
+
+
+def get_dataset(dataset_id: str) -> Optional[Dict[str, Any]]:
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            res = _supabase_client.table("datasets").select("*").eq("id", dataset_id).limit(1).execute()
+            return res.data[0] if res.data else None
+        except Exception as e:
+            _warn_supabase_fallback("query", e)
+            return None
+    conn = get_sqlite_conn()
+    row = conn.execute("SELECT * FROM datasets WHERE id = ?", (dataset_id,)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def delete_dataset(dataset_id: str) -> bool:
+    if _db_mode == "supabase" and _supabase_client:
+        try:
+            _supabase_client.table("datasets").delete().eq("id", dataset_id).execute()
+            return True
+        except Exception as e:
+            _raise_supabase_write_error("delete_dataset", e)
+    conn = get_sqlite_conn()
+    with conn:
+        conn.execute("DELETE FROM datasets WHERE id = ?", (dataset_id,))
+    conn.close()
+    return True
+
+
+def build_report_from_dataset(
+    dataset_id: str,
+    recipe: Dict[str, Any],
+    title: str,
+    status: str = "draft",
+    summary: str = "",
+    recommendations: str = "",
+    report_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Compute a report from a stored dataset with the deterministic engine (no AI arithmetic),
+    then create it (or recompute an existing one) and save the recipe as the client's template.
+    """
+    from utils.compute import build, load_csv
+    dataset = get_dataset(dataset_id)
+    if not dataset:
+        raise ValueError(f"Dataset '{dataset_id}' does not exist.")
+    result = build(load_csv(dataset["csv_text"]), recipe, dataset_name=dataset["name"])
+    computation = json.dumps({"recipe": result["recipe"], "audit": result["audit"]}, default=str)
+    core = {k: (int(round(v)) if not k.endswith("spend") else round(v, 2)) for k, v in result["core"].items()}
+
+    if report_id:
+        report = update_report(report_id, **core)
+        if not report:
+            raise ValueError(f"Report with id '{report_id}' does not exist.")
+    else:
+        report = create_report(
+            client_id=dataset["client_id"], title=title, period_start=recipe["period"]["start"],
+            period_end=recipe["period"]["end"], summary=summary, recommendations=recommendations, status=status,
+            **{k: core.get(k, 0) for k in ("impressions", "clicks", "leads", "spend",
+                                            "prev_impressions", "prev_clicks", "prev_leads", "prev_spend")},
+        )
+    set_dashboard_spec(report["id"], result["spec"])
+    update_report(report["id"], source_dataset_id=dataset_id, computation=computation)
+    save_report_template(dataset["client_id"], result["recipe"])
+    log_activity("report_computed", "report", report["id"],
+                 f"Computed from '{dataset['name']}' ({result['audit']['rows_current']} rows in period).")
+    return {"report": get_report_by_id(report["id"]), "spec": result["spec"], "audit": result["audit"]}
+
+
+def get_report_computation(report: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    raw = report.get("computation")
+    if not raw:
+        return None
+    try:
+        return json.loads(raw) if isinstance(raw, str) else raw
+    except ValueError:
+        return None
+
+
+# ==============================================================================
 # Activity Logs
 # ==============================================================================
 
@@ -1053,7 +1304,8 @@ def log_activity(action: str, entity_type: str, entity_id: str, details: str) ->
             _supabase_client.table("activity_logs").insert(log_data).execute()
             return
         except Exception as e:
-            _warn_supabase_fallback("query", e)
+            _warn_supabase_fallback("log_activity (entry skipped)", e)
+            return
 
     conn = get_sqlite_conn()
     with conn:

@@ -88,7 +88,7 @@ with tab_dir:
                 if st.button(f"📊 Open {c_name} dashboard", key=f"dash_client_{cid}", disabled=report_count == 0,
                              help=None if report_count else "This brand has no reports yet."):
                     st.session_state["brand_id"] = cid
-                    st.switch_page("pages/0_dashboard.py")
+                    st.switch_page("views/0_dashboard.py")
 
                 # Edit and Delete controls
                 exp_col1, exp_col2 = st.columns([1, 1])

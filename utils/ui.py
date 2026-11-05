@@ -17,6 +17,25 @@ def esc(value: Any) -> str:
     return html.escape("" if value is None else str(value))
 
 
+@st.cache_data(ttl=30, show_spinner=False)
+def _branding_cached() -> Dict[str, Any]:
+    from database import get_branding
+    return get_branding()
+
+
+def get_branding() -> Dict[str, Any]:
+    """Agency white-label settings; cached briefly so every page render does not hit the database."""
+    try:
+        return _branding_cached()
+    except Exception:
+        from database import BRANDING_DEFAULTS
+        return dict(BRANDING_DEFAULTS)
+
+
+def clear_branding_cache() -> None:
+    _branding_cached.clear()
+
+
 def render_html(markup: str) -> None:
     """
     Render an HTML block via st.markdown without Markdown misreading it.
@@ -29,6 +48,15 @@ def render_html(markup: str) -> None:
 
 def apply_custom_theme():
     """Inject premium Purple/Indigo SaaS design styles into the Streamlit session."""
+    brand = get_branding().get("brand_color") or "#4F46E5"
+    st.markdown(
+        f"""<style>
+        div.stButton > button[kind="primary"], div.stDownloadButton > button[kind="primary"],
+        div.stFormSubmitButton > button {{ background-color: {brand} !important; border-color: {brand} !important; }}
+        .stApp a {{ color: {brand}; }}
+        </style>""",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         """
         <style>
@@ -358,6 +386,10 @@ def apply_custom_theme():
         .cp-fstep { font-size: 0.72rem; color: #475569; margin: 0.15rem 0 0.3rem; text-align: center; }
         .cp-fstep b { color: #1E1B4B; }
         .cp-fstep span { font-weight: 700; margin-left: 0.25rem; }
+
+        .cp-source { background: #F0FDF4; border: 1px solid #BBF7D0; color: #14532D; border-radius: 12px;
+                     padding: 0.6rem 0.9rem; font-size: 0.83rem; margin: 0.2rem 0 0.6rem; }
+        .cp-source code { background: #DCFCE7; color: #14532D; }
         </style>
         """,
         unsafe_allow_html=True
@@ -424,13 +456,19 @@ def render_sidebar_brand():
     badge_color = "#10B981" if db_info["engine"] == "supabase" else "#8B5CF6"
     badge_label = "Supabase PostgreSQL" if db_info["engine"] == "supabase" else "Local SQLite Engine"
 
+    brand = get_branding()
+    logo_block = (f'<div style="margin-bottom:0.55rem;"><img src="{brand["logo_data_uri"]}" '
+                  f'style="max-height:44px; max-width:200px; object-fit:contain; background:#FFFFFF; border-radius:8px; padding:4px 8px;"></div>'
+                  if brand.get("logo_data_uri") else "")
+    icon = "" if brand.get("logo_data_uri") else "⚡"
     st.sidebar.markdown(
         f"""
         <div class="sidebar-brand-box">
+            {logo_block}
             <div class="sidebar-brand-title">
-                <span>⚡ ClientPulse</span>
+                {icon}<span>{esc(brand["agency_name"])}</span>
             </div>
-            <div class="sidebar-brand-tag">Agency Performance & Reporting Platform</div>
+            <div class="sidebar-brand-tag">{esc(brand["agency_tagline"])}</div>
             <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #4B5563;">
                 <span style="display:inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: {badge_color};"></span>
                 <span><strong>DB:</strong> {badge_label}</span>

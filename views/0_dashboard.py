@@ -8,6 +8,7 @@ charts live before they are saved.
 """
 
 import re
+from datetime import date, timedelta
 
 import pandas as pd
 import streamlit as st
@@ -15,7 +16,7 @@ import streamlit as st
 import database
 from utils.dashboard import render_dashboard_body
 from utils.pdf_report import build_report_pdf
-from utils.ui import apply_custom_theme, esc, render_html
+from utils.ui import apply_custom_theme, esc, get_branding, render_html
 
 apply_custom_theme()
 
@@ -67,6 +68,75 @@ if st.query_params.get("brand") != current_slug:
     st.query_params["brand"] = current_slug
     st.session_state["_brand_link_applied"] = current_slug
 
+# ------------------------------------------------------------------------------
+# Data & template: raw CSVs for this brand, and one-click reports from the saved template
+# ------------------------------------------------------------------------------
+def month_bounds(day: date):
+    start = day.replace(day=1)
+    end = (start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    return start, end
+
+
+def render_data_panel(client_id: str, client_name: str) -> None:
+    datasets = database.list_datasets(client_id)
+    template = database.get_report_template(client_id)
+    label = f"📁 Data & template  ·  {len(datasets)} file{'s' if len(datasets) != 1 else ''}" + ("  ·  template saved" if template else "")
+    with st.expander(label, expanded=False):
+        up_col, build_col = st.columns([1, 1.3], gap="large")
+        with up_col:
+            st.markdown("**Upload raw data (CSV)**")
+            st.caption("Exports from Google Ads, Meta, GA4, your product analytics… ClientPulse stores the rows and "
+                       "computes every number itself. Claude only describes the columns.")
+            upload = st.file_uploader("CSV file", type=["csv"], key=f"upload_{client_id}", label_visibility="collapsed")
+            if upload is not None and st.button("Save dataset", key=f"save_ds_{client_id}"):
+                try:
+                    ds = database.create_dataset(client_id, upload.name, upload.getvalue().decode("utf-8-sig"))
+                    st.toast(f"Saved {ds['name']} ({ds['row_count']} rows).", icon="📁")
+                    st.rerun()
+                except (ValueError, UnicodeDecodeError) as e:
+                    st.error(f"Could not read that file: {e}")
+            for ds in datasets:
+                st.markdown(f"`{ds['name']}` · {ds['row_count']:,} rows · {str(ds['created_at'])[:10]}")
+            if datasets:
+                st.caption(f"In Claude: *“Build {client_name}'s report from the uploaded data in ClientPulse.”*")
+
+        with build_col:
+            st.markdown("**New report from template**")
+            if not template:
+                st.caption("No template yet. The first time Claude builds a report from a dataset for this brand, "
+                           "its KPIs and charts are saved here, so later reports are one click and no AI.")
+            elif not datasets:
+                st.caption("Upload a dataset to use the saved template.")
+            else:
+                metric_names = ", ".join(m.get("label") or m["key"] for m in template.get("metrics", []))
+                st.caption(f"Template metrics: {metric_names}")
+                ds_names = {d["id"]: d["name"] for d in datasets}
+                ds_id = st.selectbox("Dataset", list(ds_names), format_func=ds_names.get, key=f"tpl_ds_{client_id}")
+                cur_start, cur_end = month_bounds(date.today().replace(day=1) - timedelta(days=1))
+                c1, c2 = st.columns(2)
+                period = c1.date_input("Report period", value=(cur_start, cur_end), key=f"tpl_period_{client_id}")
+                prev_start, prev_end = month_bounds(cur_start - timedelta(days=1))
+                compare = c2.date_input("Compare with", value=(prev_start, prev_end), key=f"tpl_compare_{client_id}")
+                title = st.text_input("Title", value=f"{cur_start:%B %Y} Performance Report", key=f"tpl_title_{client_id}")
+                if st.button("⚡ Build report from template", type="primary", key=f"tpl_build_{client_id}"):
+                    if not (isinstance(period, tuple) and len(period) == 2):
+                        st.error("Pick a start and end date for the report period.")
+                    else:
+                        recipe = dict(template, period={"start": str(period[0]), "end": str(period[1])}, verdicts={})
+                        if isinstance(compare, tuple) and len(compare) == 2:
+                            recipe["compare_period"] = {"start": str(compare[0]), "end": str(compare[1])}
+                        try:
+                            result = database.build_report_from_dataset(ds_id, recipe, title=title or "Performance Report")
+                        except ValueError as e:
+                            st.error(f"Could not build the report: {e}")
+                        else:
+                            st.session_state["dashboard_report_id"] = result["report"]["id"]
+                            st.toast("Report computed from your data. Ask Claude to write the summary.", icon="⚡")
+                            st.rerun()
+
+
+render_data_panel(brand_id, client_names[brand_id])
+
 reports = database.get_reports(client_id=brand_id)
 if not reports:
     with head_left:
@@ -76,7 +146,7 @@ if not reports:
             "ClientPulse report for this brand, or create one manually.")
     if st.button("＋ New Report"):
         st.session_state.pop("edit_report_id", None)
-        st.switch_page("pages/3_create_report.py")
+        st.switch_page("views/3_create_report.py")
     st.stop()
 
 report_options = {r["id"]: f"{r['title']}  ·  {r['period_start']} → {r['period_end']}" for r in reports}
@@ -131,7 +201,7 @@ with ctrl_pdf:
     pdf_name = re.sub(r"[^A-Za-z0-9]+", "-", f"{client_names[brand_id]} {report['title']}").strip("-").lower()
     st.download_button(
         "⬇ Export PDF",
-        data=lambda: build_report_pdf(report, breakdowns, insights, database.get_dashboard_spec(report)),
+        data=lambda: build_report_pdf(report, breakdowns, insights, database.get_dashboard_spec(report), get_branding()),
         file_name=f"{pdf_name}.pdf",
         mime="application/pdf",
         on_click="ignore",
@@ -147,7 +217,7 @@ with ctrl_edit:
 with ctrl_new:
     if st.button("＋ New Report", type="primary", width="stretch"):
         st.session_state.pop("edit_report_id", None)
-        st.switch_page("pages/3_create_report.py")
+        st.switch_page("views/3_create_report.py")
 
 # ------------------------------------------------------------------------------
 # Live editor: edits feed straight into the charts below, saved only on "Save"
@@ -237,7 +307,7 @@ if editing:
         render_html('<div class="cp-panel-title">✏️ Editing report</div>'
                     '<div class="cp-panel-sub">Every change redraws the dashboard below instantly. Nothing is saved until you press Save.</div>')
 
-        if spec:
+        if spec and any(spec.get(key) for key in ("trend", "split", "rankings", "table")):
             # ---- Client-defined dashboard: KPI names, chart data and table cells are all editable
             t_kpi, t_trend, t_split, t_rank, t_table, t_txt = st.tabs(["KPIs", "Trend", "Split", "Rankings", "Table", "Summary & Insights"])
             raw = {"currency": spec.get("currency", "$")}
@@ -329,9 +399,11 @@ if editing:
             with t_kpi:
                 st.caption("Add rows to replace the standard KPI cards (Ad Spend, Leads, CPL, CTR) with your client's "
                            "own metric names and numbers. Leave empty to keep the standard cards.")
-                kdf, custom_kpis, kedited = kpis_editor([], k("ed_kpis"))
+                kdf, custom_kpis, kedited = kpis_editor((spec or {}).get("kpis") or [], k("ed_kpis"))
                 changed_spec = not kedited.equals(kdf)
-            raw = {"currency": "$", "kpis": custom_kpis} if custom_kpis else None
+            raw = {"currency": (spec or {}).get("currency", "$"), "kpis": custom_kpis} if custom_kpis else None
+            if raw is None:
+                working_spec = None  # all custom KPI rows removed: preview the standard cards
 
         with t_txt:
             e_summary = st.text_area("Executive summary", value=report.get("summary") or "", height=130, key=k("summary"))
@@ -367,7 +439,7 @@ if editing:
                     raise ValueError(spec_error)
                 database.update_report(report_id, title=new_title.strip(), summary=e_summary,
                                        recommendations=e_recs, **totals)
-                if not spec:
+                if totals:  # standard ad report editor was used
                     for dim, df in edited_dfs.items():
                         if not df.equals(original_dfs[dim]):
                             database.set_report_breakdown(report_id, dim, working_breakdowns[dim])
@@ -386,6 +458,33 @@ if editing:
             st.session_state[f"edit_ver_{report_id}"] = ver + 1
             st.session_state[f"close_edit_{report_id}"] = True
             st.rerun()
+
+
+# ------------------------------------------------------------------------------
+# Data source & formulas: every number on a computed report is traceable
+# ------------------------------------------------------------------------------
+computation = database.get_report_computation(report)
+if computation and not editing:
+    audit, recipe = computation["audit"], computation["recipe"]
+    prev_txt = f" vs {audit['rows_previous']:,} rows in the comparison period" if audit.get("compare_period") else ""
+    render_html(f"""
+        <div class="cp-source">🧮 <b>Computed by ClientPulse</b> from <code>{esc(audit['dataset'])}</code>:
+        {audit['rows_current']:,} rows in {esc(audit['period']['start'])} → {esc(audit['period']['end'])}{esc(prev_txt)}.
+        Every figure comes from a formula below, not from AI.</div>
+    """)
+    with st.expander("Formulas & source rows"):
+        rnd = lambda v: None if v is None else round(float(v), 2)
+        st.dataframe(pd.DataFrame([{"Metric": m["label"], "Formula": m["formula"],
+                                    "This period": rnd(m["current"]), "Previous": rnd(m["previous"])} for m in audit["metrics"]]),
+                     hide_index=True, width="stretch")
+        dataset = database.get_dataset(report.get("source_dataset_id") or "")
+        if dataset:
+            from utils.compute import load_csv, period_rows
+            rows = period_rows(load_csv(dataset["csv_text"]), recipe)
+            st.caption(f"Source rows for this period ({len(rows):,})")
+            st.dataframe(rows, hide_index=True, width="stretch", height=260)
+        else:
+            st.caption("The source dataset has been deleted; the stored figures are unchanged.")
 
 # ------------------------------------------------------------------------------
 # Dashboard

@@ -221,25 +221,40 @@ def build_report_pdf(
     report: Dict[str, Any],
     breakdowns: Optional[Dict[str, List[Dict[str, Any]]]] = None,
     insights: Optional[List[Dict[str, Any]]] = None,
-    spec: Optional[Dict[str, Any]] = None
+    spec: Optional[Dict[str, Any]] = None,
+    branding: Optional[Dict[str, Any]] = None
 ) -> bytes:
     """Return the PDF bytes for a report. A client-defined spec replaces the standard sections it provides."""
     breakdowns = breakdowns or {}
     insights = insights or []
     spec = spec or {}
     currency = spec.get("currency") or "$"
+    branding = branding or {}
+    agency = _safe(branding.get("agency_name") or "ClientPulse")
+    color = branding.get("brand_color") or "#4F46E5"
+    try:
+        band = tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
+    except ValueError:
+        band = INDIGO
     doc = _ReportPDF()
     pdf = doc.pdf
 
     # Header band
-    pdf.set_fill_color(*INDIGO)
+    pdf.set_fill_color(*band)
     pdf.rect(0, 0, pdf.w, 34, style="F")
+    logo_uri = branding.get("logo_data_uri") or ""
+    if logo_uri.startswith("data:image/") and "," in logo_uri:
+        import base64
+        try:
+            pdf.image(io.BytesIO(base64.b64decode(logo_uri.split(",", 1)[1])), x=pdf.w - 14 - 30, y=6, h=14)
+        except Exception:
+            pass  # an unreadable logo should never block the report
     pdf.set_xy(14, 8)
-    doc.font(8, True, (199, 210, 254))
-    pdf.cell(0, 5, "CLIENTPULSE  |  CAMPAIGN PERFORMANCE REPORT", new_x="LMARGIN", new_y="NEXT")
+    doc.font(8, True, (226, 232, 240))
+    pdf.cell(0, 5, f"{agency.upper()}  |  PERFORMANCE REPORT", new_x="LMARGIN", new_y="NEXT")
     pdf.set_x(14)
     doc.font(16, True, (255, 255, 255))
-    pdf.multi_cell(doc.width, 8, _safe(report.get("title")), new_x="LMARGIN", new_y="NEXT")
+    pdf.multi_cell(doc.width - 34, 8, _safe(report.get("title")), new_x="LMARGIN", new_y="NEXT")
     pdf.set_x(14)
     doc.font(9, False, (224, 231, 255))
     pdf.cell(0, 5, _safe(f"{report.get('client_name', '')}  |  {report.get('period_start')} to {report.get('period_end')}"),
@@ -396,5 +411,8 @@ def build_report_pdf(
 
     pdf.ln(6)
     doc.font(7.5, False, SLATE)
-    pdf.cell(0, 5, "Prepared with ClientPulse", align="C")
+    footer = _safe(branding.get("report_footer") or f"Prepared by {agency}")
+    if branding.get("show_powered_by", True):
+        footer += "  ·  Powered by ClientPulse"
+    pdf.cell(0, 5, footer, align="C")
     return bytes(pdf.output())

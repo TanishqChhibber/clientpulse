@@ -78,6 +78,26 @@ ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS key_insights TEXT;
 -- 3d. Client-defined dashboard (custom KPI names, charts, table) as JSON
 ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS dashboard_spec TEXT;
 
+-- 3e. Raw client datasets that ClientPulse computes reports from (deterministic, no AI maths)
+CREATE TABLE IF NOT EXISTS public.datasets (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    client_id TEXT NOT NULL REFERENCES public.clients(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    columns TEXT,
+    row_count INTEGER NOT NULL DEFAULT 0,
+    csv_text TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS source_dataset_id TEXT;
+ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS computation TEXT;
+
+-- 3f. App settings: agency white-label branding and per-client report templates
+CREATE TABLE IF NOT EXISTS public.app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
 -- 4. Create Indexes for High Performance
 CREATE INDEX IF NOT EXISTS idx_clients_status ON public.clients(status);
 CREATE INDEX IF NOT EXISTS idx_reports_client_id ON public.reports(client_id);
@@ -86,12 +106,15 @@ CREATE INDEX IF NOT EXISTS idx_reports_share_token ON public.reports(share_token
 CREATE INDEX IF NOT EXISTS idx_reports_created_at ON public.reports(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_breakdowns_report ON public.report_breakdowns(report_id, dimension);
+CREATE INDEX IF NOT EXISTS idx_datasets_client ON public.datasets(client_id);
 
 -- 5. Row-Level Security (RLS) Setup
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.report_breakdowns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.datasets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
 -- Policies are dropped first so this script can be re-run safely.
 -- The ClientPulse server should use the service_role key (server-side only; it bypasses RLS).
@@ -101,6 +124,8 @@ DROP POLICY IF EXISTS "Full access for authenticated users to clients" ON public
 DROP POLICY IF EXISTS "Full access for authenticated users to reports" ON public.reports;
 DROP POLICY IF EXISTS "Full access for authenticated users to activity_logs" ON public.activity_logs;
 DROP POLICY IF EXISTS "Full access for authenticated users to report_breakdowns" ON public.report_breakdowns;
+DROP POLICY IF EXISTS "Full access for authenticated users to datasets" ON public.datasets;
+DROP POLICY IF EXISTS "Full access for authenticated users to app_settings" ON public.app_settings;
 
 -- Allow public read of published reports via share_token
 CREATE POLICY "Public read for published reports"
@@ -137,3 +162,9 @@ CREATE POLICY "Full access for authenticated users to report_breakdowns"
     TO authenticated
     USING (true)
     WITH CHECK (true);
+
+CREATE POLICY "Full access for authenticated users to datasets"
+    ON public.datasets FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+CREATE POLICY "Full access for authenticated users to app_settings"
+    ON public.app_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);

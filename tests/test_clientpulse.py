@@ -32,7 +32,8 @@ from mcp_server.server import (
     publish_report,
     set_report_breakdown,
     get_report,
-    set_custom_dashboard
+    set_custom_dashboard,
+    build_report_from_dataset
 )
 
 
@@ -296,6 +297,69 @@ class TestClientPulseCore(unittest.TestCase):
         res = create_report(client_id=cid, title="Content report", period_start="2026-10-01", period_end="2026-10-31")
         self.assertTrue(res.get("success"), res)
         self.assertEqual(res["report"]["spend"], 0)
+
+    def test_compute_engine_from_dataset(self):
+        """ClientPulse computes report numbers itself from raw rows, and reuses the template next period."""
+        csv_text = (
+            "date,channel,spend,leads,clicks,impressions\n"
+            "2026-09-03,Google,100,4,50,1000\n2026-09-10,Meta,50,5,40,2000\n"
+            "2026-10-02,Google,120,6,60,1200\n2026-10-09,Meta,80,10,70,2500\n2026-10-20,Meta,20,4,10,500\n"
+        )
+        cid = database.get_clients()[0]["id"]
+        ds = database.create_dataset(cid, "test.csv", csv_text)
+        recipe = {
+            "date_column": "date", "currency": "$",
+            "period": {"start": "2026-10-01", "end": "2026-10-31"},
+            "compare_period": {"start": "2026-09-01", "end": "2026-09-30"},
+            "metrics": [
+                {"key": "spend", "label": "Spend", "agg": "sum", "column": "spend", "format": "currency"},
+                {"key": "leads", "label": "Leads", "agg": "sum", "column": "leads"},
+                {"key": "clicks", "label": "Clicks", "agg": "sum", "column": "clicks"},
+                {"key": "impressions", "label": "Impressions", "agg": "sum", "column": "impressions"},
+                {"key": "cpl", "label": "CPL", "agg": "ratio", "numerator": "spend", "denominator": "leads",
+                 "format": "currency", "higher_is_better": False},
+            ],
+            "kpis": ["spend", "leads", "cpl"],
+            "table": {"dimension": "channel", "metrics": ["spend", "leads", "cpl"], "sort_by": "cpl"},
+            "verdicts": {"Meta": {"verdict": "scale"}},
+        }
+        res = database.build_report_from_dataset(ds["id"], recipe, title="Oct")
+        rep, kpis = res["report"], {k["label"]: k for k in res["spec"]["kpis"]}
+        self.assertEqual(kpis["Spend"]["value"], 220)
+        self.assertEqual(kpis["Spend"]["prev"], 150)
+        self.assertAlmostEqual(kpis["CPL"]["value"], 220 / 20)
+        self.assertEqual((rep["spend"], rep["leads"], rep["prev_leads"]), (220, 20, 9))
+        rows = res["spec"]["table"]["rows"]
+        self.assertEqual([r["name"] for r in rows], ["Meta", "Google"])  # sorted by CPL, lower first
+        self.assertEqual(rows[0]["verdict"], "scale")
+        self.assertEqual(res["audit"]["rows_current"], 3)
+        self.assertIn("Spend ÷ Leads", [m["formula"] for m in res["audit"]["metrics"]])
+        self.assertEqual(database.get_report_computation(database.get_report_by_id(rep["id"]))["audit"]["rows_previous"], 2)
+
+        # Next period from the saved template only (MCP tool, no metrics passed)
+        nxt = build_report_from_dataset(dataset_id=ds["id"], title="Sep",
+                                        period={"start": "2026-09-01", "end": "2026-09-30"})
+        self.assertTrue(nxt.get("success"), nxt)
+        self.assertEqual({k["label"]: k["value"] for k in nxt["kpis"]}["Spend"], 150)
+
+        bad = build_report_from_dataset(dataset_id=ds["id"], title="x", period={"start": "2026-10-01", "end": "2026-10-31"},
+                                        date_column="nope", metrics=[{"key": "s", "label": "S", "column": "spend"}])
+        self.assertTrue(bad.get("error"))
+
+    def test_branding(self):
+        """White-label settings are validated, stored, and used in the PDF."""
+        from utils.pdf_report import build_report_pdf
+        saved = database.save_branding({"agency_name": "Northwind Digital", "brand_color": "#0EA5E9",
+                                        "show_powered_by": False})
+        self.assertEqual(database.get_branding()["agency_name"], "Northwind Digital")
+        self.assertFalse(saved["show_powered_by"])
+        with self.assertRaises(ValueError):
+            database.save_branding({"brand_color": "blue"})
+        with self.assertRaises(ValueError):
+            database.save_branding({"logo_data_uri": "http://example.com/logo.png"})
+        rep = database.get_reports()[0]
+        pdf = build_report_pdf(rep, {}, [], None, database.get_branding())
+        self.assertTrue(pdf.startswith(b"%PDF"))
 
     def test_pdf_export(self):
         """PDF export produces a valid PDF, including non-Latin text and emoji."""

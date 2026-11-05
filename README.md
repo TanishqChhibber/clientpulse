@@ -79,7 +79,7 @@ clientpulse/
 ├── run.py                     # Convenience launcher (app, mcp, seed, test, all)
 ├── app.py                     # Streamlit Main Shell & Multipage Router
 ├── database.py                # Database connection, CRUD & derived metrics engine
-├── pages/
+├── views/
 │   ├── 1_overview.py          # Dashboard KPIs, Plotly charts, Recent activity
 │   ├── 2_clients.py           # Client Management (Add, Edit, Deep-dive, Delete)
 │   ├── 3_create_report.py     # Marketing Report Builder with live CTR/CPL deltas
@@ -208,6 +208,10 @@ ClientPulse exposes **6 core tools** over Streamable HTTP transport:
 | `set_report_breakdown` | `report_id`, optional `channels`, `campaigns`, `creatives`, `weekly`, `key_insights` | Fills the dashboard's channel split, creative/campaign tables (with Scale/Keep/Cut verdicts), weekly trends and insights panel |
 | `get_report` | `report_id` | Returns a report with its breakdowns and insights so Claude can review or refine it |
 | `set_custom_dashboard` | `report_id`, `currency`, optional `kpis`, `trend`, `split`, `rankings`, `table`, `reset` | Builds the dashboard around the client's own metrics (e.g. LDAU, ARPU in ₹, D30 retention) instead of ad spend and leads |
+| `list_datasets` | optional `client_id` | Lists raw CSV datasets stored in ClientPulse and whether the client has a saved template |
+| `upload_dataset` | `client_id`, `name`, `csv_text` | Stores a raw CSV (max 5 MB) so reports can be computed from it |
+| `profile_dataset` | `dataset_id` | Column types, ranges, top values and sample rows, so Claude can describe the data |
+| `build_report_from_dataset` | `dataset_id`, `title`, `period`, recipe (`metrics`, `kpis`, `trend`, `split`, `rankings`, `table`, `verdicts`…) | ClientPulse computes every number itself (no AI arithmetic), stores the formulas, and saves the recipe as the client's template; omit the recipe to reuse it next month |
 
 ---
 
@@ -290,9 +294,9 @@ python run.py test
 
 Expected output:
 ```
-.............
+...............
 ----------------------------------------------------------------------
-Ran 13 tests in 1.3s
+Ran 15 tests in 1.4s
 
 OK
 ```

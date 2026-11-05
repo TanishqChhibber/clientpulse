@@ -11,7 +11,7 @@ import streamlit as st
 import database
 from utils.dashboard import render_dashboard_body
 from utils.pdf_report import build_report_pdf
-from utils.ui import apply_custom_theme, esc, render_html
+from utils.ui import apply_custom_theme, esc, get_branding, render_html
 
 apply_custom_theme()
 
@@ -72,6 +72,7 @@ if not report:
 breakdowns = database.get_report_breakdowns(report["id"])
 insights = database.get_report_insights(report)
 spec = database.get_dashboard_spec(report)
+brand = get_branding()
 client_name = report.get("client_name", "Client")
 client_industry = report.get("client_industry", "")
 
@@ -79,7 +80,10 @@ hero_col, pdf_col = st.columns([4, 1], vertical_alignment="center")
 with hero_col:
     render_html(f"""
         <div class="public-report-hero" style="margin-bottom:1rem;">
-            <div class="public-report-agency">⚡ ClientPulse &bull; Campaign Performance Report</div>
+            <div class="public-report-agency" style="display:flex; align-items:center; gap:0.5rem; color:{esc(brand['brand_color'])};">
+                {f'<img src="{brand["logo_data_uri"]}" style="height:28px; max-width:140px; object-fit:contain;">' if brand.get("logo_data_uri") else ""}
+                {esc(brand['agency_name'])} &bull; Performance Report
+            </div>
             <h1 class="public-report-title">{esc(report.get('title'))}</h1>
             <div class="public-report-meta">
                 <strong>Client:</strong> {esc(client_name)} &nbsp;&bull;&nbsp;
@@ -92,7 +96,7 @@ with pdf_col:
     pdf_name = re.sub(r"[^A-Za-z0-9]+", "-", f"{client_name} {report.get('title', 'report')}").strip("-").lower()
     st.download_button(
         "⬇ Download PDF",
-        data=lambda: build_report_pdf(report, breakdowns, insights, spec),
+        data=lambda: build_report_pdf(report, breakdowns, insights, spec, brand),
         file_name=f"{pdf_name}.pdf",
         mime="application/pdf",
         on_click="ignore",
@@ -102,8 +106,9 @@ with pdf_col:
 
 render_dashboard_body(report, breakdowns, insights, show_insights=True, key_suffix="public", client_view=True, spec=spec)
 
-render_html("""
+powered = " &bull; Powered by <strong>ClientPulse</strong>" if brand.get("show_powered_by", True) else ""
+render_html(f"""
     <div style="font-size:0.85rem; color:#94A3B8; border-top:1px solid #E2E8F0; padding-top:1rem; margin-top:1rem;">
-        Prepared by your Digital Marketing Agency &bull; Powered by <strong>ClientPulse</strong>
+        {esc(brand['report_footer'])}{powered}
     </div>
 """)
