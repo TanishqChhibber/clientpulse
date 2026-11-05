@@ -1,0 +1,1 @@
+# ClientPulse MCP Server Package

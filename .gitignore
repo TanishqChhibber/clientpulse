@@ -1,0 +1,14 @@
+# Secrets and local data: never commit these
+.env
+clientpulse.db
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+.vscode/

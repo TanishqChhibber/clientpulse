@@ -1,0 +1,38 @@
+# Render Blueprint: deploys the ClientPulse dashboard and MCP server as two web services.
+# Both services must point at the same Supabase database (local SQLite is not shared between them).
+services:
+  - type: web
+    name: clientpulse-app
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+
+  - type: web
+    name: clientpulse-mcp
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python mcp_server/server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: MCP_HOST
+        value: 0.0.0.0
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PUBLIC_APP_URL
+        sync: false
