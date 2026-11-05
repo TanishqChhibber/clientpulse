@@ -7,7 +7,7 @@ and safely delete clients with confirmation.
 
 import streamlit as st
 import database
-from utils.ui import apply_custom_theme, render_header, esc
+from utils.ui import apply_custom_theme, render_header, esc, render_html
 
 apply_custom_theme()
 
@@ -57,7 +57,7 @@ with tab_dir:
             status_badge_bg = "#EEF2FF" if c_status == "active" else "#F1F5F9"
 
             with st.container():
-                st.markdown(
+                render_html(
                     f"""
                     <div style="background:#FFFFFF; border:1px solid #E0E7FF; border-radius:12px; padding:1.25rem; margin-bottom:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -82,8 +82,7 @@ with tab_dir:
                             </div>
                         </div>
                     </div>
-                    """,
-                    unsafe_allow_html=True
+                    """
                 )
 
                 # Edit and Delete controls

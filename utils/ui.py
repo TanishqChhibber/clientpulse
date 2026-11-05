@@ -17,6 +17,16 @@ def esc(value: Any) -> str:
     return html.escape("" if value is None else str(value))
 
 
+def render_html(markup: str) -> None:
+    """
+    Render an HTML block via st.markdown without Markdown misreading it.
+    Strips indentation and blank lines: a blank line (e.g. from an empty optional field)
+    followed by indented HTML would otherwise be displayed as a raw code block.
+    """
+    compact = "\n".join(line.strip() for line in markup.splitlines() if line.strip())
+    st.markdown(compact, unsafe_allow_html=True)
+
+
 def apply_custom_theme():
     """Inject premium Purple/Indigo SaaS design styles into the Streamlit session."""
     st.markdown(

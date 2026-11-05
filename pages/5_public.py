@@ -11,7 +11,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import database
-from utils.ui import apply_custom_theme, get_plotly_layout, esc, build_period_comparison_chart
+from utils.ui import apply_custom_theme, get_plotly_layout, esc, build_period_comparison_chart, render_html
 
 apply_custom_theme()
 
@@ -120,7 +120,7 @@ def render_public_metric(label: str, value: str, delta, higher_is_better: Option
 # ------------------------------------------------------------------------------
 # Client Facing Presentation
 # ------------------------------------------------------------------------------
-st.markdown(
+render_html(
     f"""
     <div class="public-report-hero">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -138,8 +138,7 @@ st.markdown(
             </div>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True
+    """
 )
 
 # Metric Cards
