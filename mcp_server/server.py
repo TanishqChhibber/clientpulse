@@ -64,6 +64,8 @@ mcp = FastMCP(
 # ==============================================================================
 @mcp.tool(
     name="create_client",
+    title="Create Client",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False},
     description="Register a new agency client in ClientPulse database. Performs real database insert."
 )
 def create_client(
@@ -114,6 +116,8 @@ def create_client(
 # ==============================================================================
 @mcp.tool(
     name="list_clients",
+    title="List Clients",
+    annotations={"readOnlyHint": True, "openWorldHint": False},
     description="Retrieve agency clients from database with optional status filtering and name search."
 )
 def list_clients(
@@ -149,6 +153,8 @@ def list_clients(
 # ==============================================================================
 @mcp.tool(
     name="create_report",
+    title="Create Report",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False},
     description="Create a marketing performance report for a client with campaign metrics, summary, and recommendations."
 )
 def create_report(
@@ -239,6 +245,8 @@ def create_report(
 # ==============================================================================
 @mcp.tool(
     name="list_reports",
+    title="List Reports",
+    annotations={"readOnlyHint": True, "openWorldHint": False},
     description="Retrieve campaign reports with optional filtering by client_id, status, or search query."
 )
 def list_reports(
@@ -277,6 +285,8 @@ def list_reports(
 # ==============================================================================
 @mcp.tool(
     name="update_report",
+    title="Update Report",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
     description="Update an existing campaign report. Recalculates CTR and CPL if metrics change."
 )
 def update_report(
@@ -354,6 +364,8 @@ def update_report(
 # ==============================================================================
 @mcp.tool(
     name="publish_report",
+    title="Publish Report",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
     description="Publish a report, making it active and returning a unique public shareable URL for the client."
 )
 def publish_report(report_id: str) -> Dict[str, Any]:
