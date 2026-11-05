@@ -175,25 +175,62 @@ def render_channel_donut(channels: List[Dict[str, Any]]) -> None:
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 
+def _compact(n: float) -> str:
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.2f}M"
+    if n >= 100_000:
+        return f"{n / 1_000:.0f}K"
+    if n >= 10_000:
+        return f"{n / 1_000:.1f}K"
+    return f"{n:,.0f}"
+
+
+def _rate_change(cur: Optional[float], prev: Optional[float]) -> str:
+    """Percentage-point change chip for a conversion rate vs the previous period."""
+    if cur is None or prev is None:
+        return ""
+    diff = cur - prev
+    cls = "cp-delta-positive" if diff >= 0 else "cp-delta-negative"
+    return f'<span class="{cls}">{"▲" if diff >= 0 else "▼"} {abs(diff):.2f} pts</span>'
+
+
 def render_funnel(report: Dict[str, Any]) -> None:
+    """Tapered funnel: each stage narrower than the last, with step conversion rates and stage costs."""
     k = report_kpis(report)
-    steps = [("Impressions", k["impressions"], None), ("Clicks", k["clicks"], k["ctr"]), ("Leads", k["leads"], k["cvr"])]
-    top = max(k["impressions"], 1)
-    rows = []
-    for i, (name, value, rate) in enumerate(steps):
-        # Log scale keeps 1-2% click-through steps visible next to millions of impressions
-        width = max(6, math.log10(max(value, 1)) / math.log10(max(top, 10)) * 100)
-        rate_txt = f"{rate:.2f}%" if rate is not None else "100%"
-        rows.append(f"""
-            <div class="cp-bar-row">
-                <span class="cp-bar-name">{name}</span>
-                <span class="cp-bar-track"><span style="width:{width:.0f}%; background:{PALETTE[i]};"></span></span>
-                <span class="cp-bar-val">{value:,.0f}<em>{rate_txt}</em></span>
-            </div>""")
+    p_clicks, p_imp = num(report.get("prev_clicks")), num(report.get("prev_impressions"))
+    prev_cvr = ratio(k["prev_leads"], p_clicks, 100) if k["prev_leads"] else None
+    cpm = ratio(k["spend"], k["impressions"], 1000)
+    cpc = ratio(k["spend"], k["clicks"])
+
+    stages = [
+        ("Impressions", k["impressions"], f"${cpm:,.2f} CPM" if cpm is not None else "", 100,
+         "linear-gradient(90deg, #4F46E5, #6366F1)"),
+        ("Clicks", k["clicks"], f"${cpc:,.2f} CPC" if cpc is not None else "", 76,
+         "linear-gradient(90deg, #7C3AED, #8B5CF6)"),
+        ("Leads", k["leads"], f"${k['cpl']:,.2f} CPL" if k["cpl"] is not None else "", 52,
+         "linear-gradient(90deg, #059669, #10B981)"),
+    ]
+    steps = [
+        ("Click-through", k["ctr"], _rate_change(k["ctr"], k["prev_ctr"] if p_imp else None)),
+        ("Click → lead", k["cvr"], _rate_change(k["cvr"], prev_cvr)),
+    ]
+
+    parts = []
+    for i, (name, value, cost, width, bg) in enumerate(stages):
+        parts.append(f"""
+            <div class="cp-fstage" style="width:{width}%; background:{bg};">
+                <span class="cp-fname">{name}</span><span class="cp-fvalue">{_compact(value)}</span>
+            </div>
+            <div class="cp-fcost">{cost}</div>""")
+        if i < len(steps):
+            label, rate, change = steps[i]
+            rate_txt = f"{rate:.2f}%" if rate is not None else "–"
+            parts.append(f'<div class="cp-fstep">↓ <b>{rate_txt}</b> {label} {change}</div>')
+
     render_html(f"""
         <div class="cp-panel">
             <div class="cp-panel-title"><span class="cp-dot" style="background:#4F46E5"></span>Conversion Funnel</div>
-            {''.join(rows)}
+            <div class="cp-funnel">{''.join(parts)}</div>
         </div>
     """)
 

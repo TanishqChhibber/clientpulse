@@ -346,6 +346,18 @@ def apply_custom_theme():
         .cp-ask { font-size: 0.72rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.9rem; }
         .cp-suggest { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.45rem; }
         .cp-suggest span { font-size: 0.74rem; color: #4338CA; background: #EEF2FF; border: 1px solid #C7D2FE; padding: 0.25rem 0.6rem; border-radius: 99px; }
+
+        /* Tapered conversion funnel */
+        .cp-funnel { display: flex; flex-direction: column; align-items: center; margin-top: 0.6rem; }
+        .cp-fstage { display: flex; justify-content: space-between; align-items: center; color: #FFFFFF;
+                     padding: 0.42rem 0.8rem; border-radius: 10px; box-shadow: 0 2px 6px rgba(79,70,229,0.18);
+                     font-size: 0.8rem; min-width: 8.5rem; }
+        .cp-fname { font-weight: 600; opacity: 0.92; }
+        .cp-fvalue { font-weight: 800; font-size: 0.95rem; margin-left: 0.5rem; }
+        .cp-fcost { font-size: 0.68rem; color: #94A3B8; font-weight: 600; margin-top: 0.15rem; }
+        .cp-fstep { font-size: 0.72rem; color: #475569; margin: 0.15rem 0 0.3rem; text-align: center; }
+        .cp-fstep b { color: #1E1B4B; }
+        .cp-fstep span { font-weight: 700; margin-left: 0.25rem; }
         </style>
         """,
         unsafe_allow_html=True
