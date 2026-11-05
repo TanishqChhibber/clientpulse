@@ -8,6 +8,7 @@ import streamlit as st
 import pandas as pd
 import database
 from utils.ui import apply_custom_theme, render_header, esc, build_period_comparison_chart
+from utils.dashboard import fmt_metric
 
 apply_custom_theme()
 
@@ -71,6 +72,15 @@ with tab_list:
             token = rep.get("share_token", "")
             share_url = f"{database.PUBLIC_APP_URL}/?page=public&token={token}"
 
+            custom = database.get_dashboard_spec(rep)
+            if custom and custom.get("kpis"):
+                metrics_line = " &nbsp;•&nbsp; ".join(
+                    f"{esc(k['label'])}: <strong>{esc(fmt_metric(k['value'], k.get('format', 'number'), custom.get('currency', '$')))}</strong>"
+                    for k in custom["kpis"][:4])
+            else:
+                metrics_line = (f"Spend: <strong>${rspend:,.2f}</strong> &nbsp;•&nbsp; Leads: <strong>{rleads:,}</strong> "
+                                f"&nbsp;•&nbsp; CPL: <strong>${rcpl:.2f}</strong> &nbsp;•&nbsp; CTR: <strong>{rctr:.2f}%</strong>")
+
             badge_bg = "#ECFDF5" if rstatus == "published" else "#FFFBEB"
             badge_color = "#065F46" if rstatus == "published" else "#92400E"
 
@@ -89,12 +99,7 @@ with tab_list:
                                 <div style="font-size:0.85rem; color:#6366F1; font-weight:600; margin-top:0.25rem;">
                                     Client: {safe_client} &nbsp;|&nbsp; Period: {safe_start} to {safe_end}
                                 </div>
-                                <div style="font-size:0.85rem; color:#475569; margin-top:0.4rem;">
-                                    Spend: <strong>${rspend:,.2f}</strong> &nbsp;•&nbsp; 
-                                    Leads: <strong>{rleads:,}</strong> &nbsp;•&nbsp; 
-                                    CPL: <strong>${rcpl:.2f}</strong> &nbsp;•&nbsp; 
-                                    CTR: <strong>{rctr:.2f}%</strong>
-                                </div>
+                                <div style="font-size:0.85rem; color:#475569; margin-top:0.4rem;">{metrics_line}</div>
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:0.75rem; color:#94A3B8;">ID: <code>{safe_id}</code></div>

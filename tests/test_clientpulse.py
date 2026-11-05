@@ -31,7 +31,8 @@ from mcp_server.server import (
     update_report,
     publish_report,
     set_report_breakdown,
-    get_report
+    get_report,
+    set_custom_dashboard
 )
 
 
@@ -255,6 +256,46 @@ class TestClientPulseCore(unittest.TestCase):
 
         self.assertTrue(set_report_breakdown(report_id=rep["id"]).get("error"))
         self.assertTrue(set_report_breakdown(report_id="missing", weekly=[]).get("error"))
+
+    def test_custom_dashboard_spec(self):
+        """Client-defined KPIs/charts/table are validated, stored, cleared, and exported."""
+        from utils.pdf_report import build_report_pdf
+        rep = database.get_reports()[0]
+        spec = {
+            "currency": "₹",
+            "kpis": [{"label": "LDAU", "value": 72200, "prev": 67200},
+                     {"label": "D30 Retention", "value": 12.5, "prev": 12.0, "format": "percent"}],
+            "trend": {"title": "LDAU", "x": ["2026-09", "2026-10"], "series": [{"name": "LDAU", "values": [67200, 72200]}]},
+            "split": {"title": "CTV by duration", "labels": ["<1 min", "10+ min"], "values": [29600, 79730], "format": "currency"},
+            "rankings": [{"title": "D30 by duration", "labels": ["<1 min", "10+ min"], "values": [7, 21.3], "format": "percent"}],
+            "table": {"title": "Videos", "columns": [{"key": "ldau", "label": "LDAU"}],
+                      "rows": [{"name": "Full Episode 2", "values": {"ldau": 4400}, "verdict": "scale"}]},
+        }
+        res = set_custom_dashboard(report_id=rep["id"], **spec)
+        self.assertTrue(res.get("success"), res)
+        stored = database.get_dashboard_spec(database.get_report_by_id(rep["id"]))
+        self.assertEqual(stored["kpis"][1]["label"], "D30 Retention")
+        self.assertEqual(stored["currency"], "₹")
+        self.assertEqual(get_report(report_id=rep["id"])["custom_dashboard"]["table"]["rows"][0]["verdict"], "scale")
+
+        pdf = build_report_pdf(database.get_report_by_id(rep["id"]), {}, [], stored)
+        self.assertTrue(pdf.startswith(b"%PDF"))
+
+        for bad in ({"kpis": [{"label": "", "value": 1}]},
+                    {"trend": {"x": ["a", "b"], "series": [{"name": "s", "values": [1]}]}},
+                    {"split": {"labels": ["a"], "values": [1, 2]}}):
+            with self.assertRaises(ValueError):
+                database.validate_dashboard_spec(bad)
+
+        self.assertTrue(set_custom_dashboard(report_id=rep["id"], reset=True).get("success"))
+        self.assertIsNone(database.get_dashboard_spec(database.get_report_by_id(rep["id"])))
+
+    def test_create_report_without_ad_metrics(self):
+        """Non-ad reports can be created without impressions/clicks/leads/spend."""
+        cid = database.get_clients()[0]["id"]
+        res = create_report(client_id=cid, title="Content report", period_start="2026-10-01", period_end="2026-10-31")
+        self.assertTrue(res.get("success"), res)
+        self.assertEqual(res["report"]["spend"], 0)
 
     def test_pdf_export(self):
         """PDF export produces a valid PDF, including non-Latin text and emoji."""

@@ -75,6 +75,9 @@ CREATE TABLE IF NOT EXISTS public.report_breakdowns (
 -- 3c. Key insight bullets (JSON list) shown in the dashboard insights panel
 ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS key_insights TEXT;
 
+-- 3d. Client-defined dashboard (custom KPI names, charts, table) as JSON
+ALTER TABLE public.reports ADD COLUMN IF NOT EXISTS dashboard_spec TEXT;
+
 -- 4. Create Indexes for High Performance
 CREATE INDEX IF NOT EXISTS idx_clients_status ON public.clients(status);
 CREATE INDEX IF NOT EXISTS idx_reports_client_id ON public.reports(client_id);

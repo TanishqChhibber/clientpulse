@@ -71,6 +71,7 @@ if not report:
 # ------------------------------------------------------------------------------
 breakdowns = database.get_report_breakdowns(report["id"])
 insights = database.get_report_insights(report)
+spec = database.get_dashboard_spec(report)
 client_name = report.get("client_name", "Client")
 client_industry = report.get("client_industry", "")
 
@@ -91,7 +92,7 @@ with pdf_col:
     pdf_name = re.sub(r"[^A-Za-z0-9]+", "-", f"{client_name} {report.get('title', 'report')}").strip("-").lower()
     st.download_button(
         "⬇ Download PDF",
-        data=lambda: build_report_pdf(report, breakdowns, insights),
+        data=lambda: build_report_pdf(report, breakdowns, insights, spec),
         file_name=f"{pdf_name}.pdf",
         mime="application/pdf",
         on_click="ignore",
@@ -99,7 +100,7 @@ with pdf_col:
         width="stretch",
     )
 
-render_dashboard_body(report, breakdowns, insights, show_insights=True, key_suffix="public", client_view=True)
+render_dashboard_body(report, breakdowns, insights, show_insights=True, key_suffix="public", client_view=True, spec=spec)
 
 render_html("""
     <div style="font-size:0.85rem; color:#94A3B8; border-top:1px solid #E2E8F0; padding-top:1rem; margin-top:1rem;">

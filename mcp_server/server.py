@@ -14,6 +14,7 @@ Exposed Tools:
 6. publish_report
 7. set_report_breakdown
 8. get_report
+9. set_custom_dashboard
 
 NO AI API keys or embedded models are used. All reasoning is performed by Claude.
 """
@@ -59,7 +60,10 @@ mcp = FastMCP(
         "update report analyses, and publish reports with shareable links for client viewing. "
         "When the user shares raw campaign data (CSV / sheet exports), aggregate it yourself, call create_report "
         "with the period totals, then call set_report_breakdown once with per-channel, per-campaign, per-creative "
-        "and weekly rows plus 3-5 key insights, so the dashboard charts and tables are populated."
+        "and weekly rows plus 3-5 key insights, so the dashboard charts and tables are populated. "
+        "If the data is NOT ad performance (e.g. video/content, product, revenue or retention metrics), create the report "
+        "with 0 for the ad metrics and call set_custom_dashboard to define the client's own KPI names and values, trend, "
+        "split, rankings and table, using the column names and units from their data (e.g. LDAU, ARPU in INR, D30 retention)."
     ),
     auth=_build_auth()
 )
@@ -168,12 +172,12 @@ def create_report(
     title: str,
     period_start: str,
     period_end: str,
-    impressions: int,
-    clicks: int,
-    leads: int,
-    spend: float,
-    summary: str,
-    recommendations: str,
+    impressions: int = 0,
+    clicks: int = 0,
+    leads: int = 0,
+    spend: float = 0.0,
+    summary: str = "",
+    recommendations: str = "",
     prev_impressions: int = 0,
     prev_clicks: int = 0,
     prev_leads: int = 0,
@@ -189,7 +193,7 @@ def create_report(
         title: Title of the performance report (e.g. 'Q3 2026 Paid Ads Growth & ROI Report').
         period_start: Start date of reporting period in YYYY-MM-DD format.
         period_end: End date of reporting period in YYYY-MM-DD format.
-        impressions: Total ad impressions delivered in this period.
+        impressions: Total ad impressions delivered in this period (0 if the data is not ad performance).
         clicks: Total ad clicks generated.
         leads: Total conversions / qualified leads generated.
         spend: Total advertising spend in USD.
@@ -504,15 +508,130 @@ def get_report(report_id: str) -> Dict[str, Any]:
     if not report:
         return {"error": True, "message": f"Report with ID '{report_id}' not found."}
     insights = database.get_report_insights(report)
-    report = {k: v for k, v in report.items() if k != "key_insights"}
+    spec_source = report
+    report = {k: v for k, v in report.items() if k not in ("key_insights", "dashboard_spec")}
     return {
         "success": True,
         "report": report,
         "breakdowns": database.get_report_breakdowns(report_id),
         "key_insights": insights,
+        "custom_dashboard": database.get_dashboard_spec(spec_source),
         "public_url": f"{database.PUBLIC_APP_URL}/?page=public&token={report['share_token']}"
         if report.get("status") == "published" else None,
     }
+
+
+# ==============================================================================
+# TOOL 9: set_custom_dashboard
+# ==============================================================================
+MetricFormat = Literal["number", "currency", "percent", "decimal"]
+
+
+class CustomKPI(BaseModel):
+    label: str = Field(description="KPI name exactly as the client uses it, e.g. 'LDAU', 'ARPU', 'D30 Retention'.")
+    value: float = Field(description="Value for the current period.")
+    prev: Optional[float] = Field(None, description="Value for the previous period, for the change indicator.")
+    format: MetricFormat = Field("number", description="'currency' uses the dashboard currency symbol; 'percent' expects 0-100.")
+    higher_is_better: Optional[bool] = Field(True, description="False for cost-like metrics; null for neutral.")
+
+
+class TrendSeries(BaseModel):
+    name: str
+    values: List[float] = Field(description="One value per x label.")
+    format: MetricFormat = "number"
+    axis: Literal["left", "right"] = Field("left", description="Put a second series with a different unit on the right axis.")
+    higher_is_better: Optional[bool] = True
+
+
+class TrendChart(BaseModel):
+    title: str = "Trend"
+    x: List[str] = Field(description="Ordered x-axis labels, e.g. months '2026-07'... or week start dates.")
+    series: List[TrendSeries] = Field(description="1-3 series.")
+
+
+class LabelledChart(BaseModel):
+    title: str
+    labels: List[str]
+    values: List[float]
+    format: MetricFormat = "number"
+    higher_is_better: Optional[bool] = True
+
+
+class TableColumn(BaseModel):
+    key: str = Field(description="Key used in each row's values, e.g. 'ldau'.")
+    label: str = Field(description="Column header shown to the client, e.g. 'LDAU'.")
+    format: MetricFormat = "number"
+
+
+class TableRow(BaseModel):
+    name: str
+    values: Dict[str, Optional[float]] = Field(description="Map of column key to value.")
+    verdict: Optional[Literal["scale", "keep", "cut"]] = None
+    note: Optional[str] = None
+
+
+class CustomTable(BaseModel):
+    title: str = "Breakdown"
+    columns: List[TableColumn]
+    rows: List[TableRow]
+
+
+@mcp.tool(
+    name="set_custom_dashboard",
+    title="Set Custom Dashboard",
+    annotations={"readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    description=(
+        "Define a report's dashboard around the client's OWN metrics instead of ad spend/leads: KPI cards with custom "
+        "names and units, a trend chart, a split (donut) chart, up to 2 ranking bar charts, and a table with custom columns. "
+        "Replaces any previous custom dashboard for the report. Pass reset=true to go back to the standard ad layout."
+    )
+)
+def set_custom_dashboard(
+    report_id: str,
+    currency: str = "$",
+    kpis: Optional[List[CustomKPI]] = None,
+    trend: Optional[TrendChart] = None,
+    split: Optional[LabelledChart] = None,
+    rankings: Optional[List[LabelledChart]] = None,
+    table: Optional[CustomTable] = None,
+    reset: bool = False
+) -> Dict[str, Any]:
+    """
+    Set the client-defined dashboard for a report.
+
+    Args:
+        report_id: The report to customise.
+        currency: Symbol for 'currency' metrics, e.g. '$', '₹', '€'.
+        kpis: 2-8 headline KPI cards with the client's metric names.
+        trend: Time series chart (e.g. monthly LDAU and revenue).
+        split: Share-of-total donut (e.g. revenue by duration bucket).
+        rankings: Up to 2 ranked bar charts (e.g. D30 retention by video).
+        table: Per-item table (e.g. one row per video) with custom columns, verdicts and notes.
+        reset: If true, remove the custom dashboard and use the standard ad layout.
+
+    Returns:
+        Which sections were stored.
+    """
+    if not database.get_report_by_id(report_id):
+        return {"error": True, "message": f"Report with ID '{report_id}' not found."}
+    try:
+        if reset:
+            database.set_dashboard_spec(report_id, None)
+            return {"success": True, "message": "Custom dashboard removed; the standard layout is back."}
+        dump = lambda m: m.model_dump() if hasattr(m, "model_dump") else m
+        spec = {
+            "currency": currency,
+            "kpis": [dump(k) for k in (kpis or [])],
+            "trend": dump(trend) if trend else None,
+            "split": dump(split) if split else None,
+            "rankings": [dump(r) for r in (rankings or [])],
+            "table": dump(table) if table else None,
+        }
+        stored = database.set_dashboard_spec(report_id, spec)
+        sections = [k for k in ("kpis", "trend", "split", "rankings", "table") if stored.get(k)]
+        return {"success": True, "message": "Custom dashboard saved.", "report_id": report_id, "sections": sections}
+    except Exception as e:
+        return {"error": True, "message": f"Failed to save custom dashboard: {str(e)}"}
 
 
 # ==============================================================================

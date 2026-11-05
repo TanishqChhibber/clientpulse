@@ -166,6 +166,8 @@ def init_sqlite_schema():
         report_columns = {row["name"] for row in conn.execute("PRAGMA table_info(reports)")}
         if "key_insights" not in report_columns:
             conn.execute("ALTER TABLE reports ADD COLUMN key_insights TEXT")
+        if "dashboard_spec" not in report_columns:
+            conn.execute("ALTER TABLE reports ADD COLUMN dashboard_spec TEXT")
     conn.close()
 
 
@@ -650,7 +652,7 @@ def update_report(report_id: str, **fields) -> Optional[Dict[str, Any]]:
     allowed = {
         "title", "period_start", "period_end", "impressions", "clicks",
         "leads", "spend", "prev_impressions", "prev_clicks", "prev_leads",
-        "prev_spend", "summary", "recommendations", "status", "key_insights"
+        "prev_spend", "summary", "recommendations", "status", "key_insights", "dashboard_spec"
     }
     update_data = {k: v for k, v in fields.items() if k in allowed and v is not None}
     if not update_data:
@@ -891,6 +893,142 @@ def get_report_insights(report: Dict[str, Any]) -> List[Dict[str, Any]]:
         return parsed if isinstance(parsed, list) else []
     except (TypeError, ValueError):
         return []
+
+
+# ==============================================================================
+# Custom Dashboard Spec (client-defined KPIs, charts, and table)
+# ==============================================================================
+
+METRIC_FORMATS = ("number", "currency", "percent", "decimal")
+
+
+def _num_or_none(value: Any, where: str) -> Optional[float]:
+    if value is None or value == "":
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        raise ValueError(f"{where}: '{value}' is not a number.")
+
+
+def _fmt_check(fmt: Any, where: str) -> str:
+    fmt = str(fmt or "number").strip().lower()
+    if fmt not in METRIC_FORMATS:
+        raise ValueError(f"{where}: format must be one of {', '.join(METRIC_FORMATS)}.")
+    return fmt
+
+
+def _better(value: Any) -> Optional[bool]:
+    return None if value is None or value == "" else bool(value)
+
+
+def validate_dashboard_spec(spec: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate and normalise a custom dashboard spec. Every section is optional:
+      currency: symbol for 'currency' metrics (e.g. "$", "₹")
+      kpis:     [{label, value, prev, format, higher_is_better}]                     (max 8)
+      trend:    {title, x: [labels], series: [{name, values, format, axis}]}          (max 3 series)
+      split:    {title, labels: [...], values: [...], format}
+      rankings: [{title, labels, values, format, higher_is_better}]                   (max 2)
+      table:    {title, columns: [{key, label, format}], rows: [{name, values: {key: n}, verdict, note}]}
+    """
+    out: Dict[str, Any] = {"currency": str(spec.get("currency") or "$").strip()[:4] or "$"}
+
+    kpis = spec.get("kpis") or []
+    if len(kpis) > 8:
+        raise ValueError("At most 8 KPIs are supported.")
+    out["kpis"] = []
+    for i, k in enumerate(kpis):
+        where = f"KPI {i + 1}"
+        label = str(k.get("label") or "").strip()
+        if not label:
+            raise ValueError(f"{where}: label is required.")
+        value = _num_or_none(k.get("value"), where)
+        if value is None:
+            raise ValueError(f"{where} ('{label}'): value is required.")
+        out["kpis"].append({"label": label, "value": value, "prev": _num_or_none(k.get("prev"), where),
+                            "format": _fmt_check(k.get("format"), where), "higher_is_better": _better(k.get("higher_is_better", True))})
+
+    trend = spec.get("trend")
+    if trend:
+        x = [str(v) for v in (trend.get("x") or [])]
+        series = trend.get("series") or []
+        if not x or not series:
+            raise ValueError("Trend needs 'x' labels and at least one series.")
+        if len(series) > 3:
+            raise ValueError("Trend supports at most 3 series.")
+        clean_series = []
+        for j, se in enumerate(series):
+            where = f"Trend series {j + 1}"
+            values = [_num_or_none(v, where) or 0.0 for v in (se.get("values") or [])]
+            if len(values) != len(x):
+                raise ValueError(f"{where}: needs {len(x)} values (one per x label), got {len(values)}.")
+            axis = "right" if str(se.get("axis") or "").lower() == "right" else "left"
+            clean_series.append({"name": str(se.get("name") or f"Series {j + 1}").strip(), "values": values,
+                                 "format": _fmt_check(se.get("format"), where), "axis": axis,
+                                 "higher_is_better": _better(se.get("higher_is_better", True))})
+        out["trend"] = {"title": str(trend.get("title") or "Trend").strip(), "x": x, "series": clean_series}
+
+    def labelled(block: Dict[str, Any], where: str) -> Dict[str, Any]:
+        labels = [str(v) for v in (block.get("labels") or [])]
+        values = [_num_or_none(v, where) or 0.0 for v in (block.get("values") or [])]
+        if not labels or len(labels) != len(values):
+            raise ValueError(f"{where}: 'labels' and 'values' must be non-empty and the same length.")
+        return {"title": str(block.get("title") or where).strip(), "labels": labels, "values": values,
+                "format": _fmt_check(block.get("format"), where), "higher_is_better": _better(block.get("higher_is_better", True))}
+
+    if spec.get("split"):
+        out["split"] = labelled(spec["split"], "Split")
+    rankings = spec.get("rankings") or []
+    if len(rankings) > 2:
+        raise ValueError("At most 2 rankings are supported.")
+    out["rankings"] = [labelled(r, f"Ranking {i + 1}") for i, r in enumerate(rankings)]
+
+    table = spec.get("table")
+    if table:
+        columns = []
+        for c in table.get("columns") or []:
+            key = str(c.get("key") or "").strip()
+            if not key:
+                raise ValueError("Every table column needs a 'key'.")
+            columns.append({"key": key, "label": str(c.get("label") or key).strip(), "format": _fmt_check(c.get("format"), f"Column '{key}'")})
+        if not columns or len(columns) > 10:
+            raise ValueError("Table needs between 1 and 10 columns.")
+        rows = []
+        for i, r in enumerate((table.get("rows") or [])[:200]):
+            name = str(r.get("name") or "").strip()
+            if not name:
+                raise ValueError(f"Table row {i + 1}: name is required.")
+            verdict = r.get("verdict")
+            verdict = str(verdict).strip().lower() if verdict not in (None, "") else None
+            if verdict is not None and verdict not in VERDICTS:
+                raise ValueError(f"Table row {i + 1}: verdict must be one of {', '.join(VERDICTS)}.")
+            values = r.get("values") or {}
+            rows.append({"name": name, "values": {c["key"]: _num_or_none(values.get(c["key"]), f"Row '{name}'") for c in columns},
+                         "verdict": verdict, "note": str(r.get("note") or "").strip()})
+        out["table"] = {"title": str(table.get("title") or "Breakdown").strip(), "columns": columns, "rows": rows}
+    return out
+
+
+def set_dashboard_spec(report_id: str, spec: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """Store (or with None, clear) a report's custom dashboard spec."""
+    clean = validate_dashboard_spec(spec) if spec else None
+    if update_report(report_id, dashboard_spec=json.dumps(clean) if clean else "") is None:
+        raise ValueError(f"Report with id '{report_id}' does not exist.")
+    return clean
+
+
+def get_dashboard_spec(report: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    raw = report.get("dashboard_spec")
+    if not raw:
+        return None
+    if isinstance(raw, dict):
+        return raw
+    try:
+        parsed = json.loads(raw)
+        return parsed if isinstance(parsed, dict) else None
+    except (TypeError, ValueError):
+        return None
 
 
 # ==============================================================================

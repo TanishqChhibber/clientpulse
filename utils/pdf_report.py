@@ -116,6 +116,76 @@ def _cpl_bars(channels: List[Dict[str, Any]]) -> io.BytesIO:
     return _chart_png(draw, 3.6, 2.3)
 
 
+def _fmt(value: Any, fmt: str, currency: str) -> str:
+    if value is None:
+        return "-"
+    v = float(value)
+    if fmt == "percent":
+        return f"{v:.1f}%"
+    if fmt == "currency":
+        return f"{currency}{v:,.2f}" if abs(v) < 100 else f"{currency}{v:,.0f}"
+    if fmt == "decimal" or (v != int(v) and abs(v) < 100):
+        return f"{v:,.2f}"
+    return f"{v:,.0f}"
+
+
+def _custom_trend_chart(trend: Dict[str, Any]) -> io.BytesIO:
+    def draw(fig, ax):
+        right_ax = None
+        for i, se in enumerate(trend["series"]):
+            target = ax
+            if se.get("axis") == "right":
+                right_ax = right_ax or ax.twinx()
+                target = right_ax
+            target.plot(trend["x"], se["values"], color=CHART_COLORS[i], marker="o" if target is ax else None,
+                        linestyle="--" if target is not ax else "-", linewidth=2, label=_safe(se["name"]))
+            target.tick_params(labelsize=7)
+        if right_ax is not None:
+            right_ax.spines["top"].set_visible(False)
+        handles = ax.get_legend_handles_labels()
+        if right_ax is not None:
+            rh = right_ax.get_legend_handles_labels()
+            handles = (handles[0] + rh[0], handles[1] + rh[1])
+        ax.legend(*handles, fontsize=7, frameon=False, loc="upper left")
+        ax.set_title(_safe(trend.get("title") or "Trend"), fontsize=9, loc="left", color="#1E1B4B")
+        ax.grid(axis="y", color="#F1F5F9")
+
+    return _chart_png(draw, 6.2, 2.4)
+
+
+def _labelled_donut(block: Dict[str, Any], currency: str) -> io.BytesIO:
+    def draw(fig, ax):
+        values = block["values"]
+        ax.pie(values, colors=CHART_COLORS[:len(values)], startangle=90, wedgeprops={"width": 0.38, "edgecolor": "white"})
+        ax.text(0, 0, _safe(_fmt(sum(values), block.get("format", "number"), currency)), ha="center", va="center",
+                fontsize=8, fontweight="bold", color="#1E1B4B")
+        total = sum(values) or 1
+        ax.legend([f"{_safe(l)} ({v / total * 100:.0f}%)" for l, v in zip(block["labels"], values)],
+                  loc="center left", bbox_to_anchor=(1, 0.5), fontsize=7, frameon=False)
+        ax.set_title(_safe(block.get("title") or ""), fontsize=9, loc="left", color="#1E1B4B")
+        ax.axis("equal")
+
+    return _chart_png(draw, 3.6, 2.3)
+
+
+def _labelled_bars(block: Dict[str, Any], currency: str) -> io.BytesIO:
+    pairs = sorted(zip(block["labels"], block["values"]), key=lambda p: p[1], reverse=block.get("higher_is_better") is not False)
+
+    def draw(fig, ax):
+        names = [_safe(p[0]) for p in pairs]
+        values = [p[1] for p in pairs]
+        colors = ["#10B981" if i == 0 else ("#EF4444" if i == len(pairs) - 1 and len(pairs) > 1 else "#6366F1")
+                  for i in range(len(pairs))]
+        ax.barh(names, values, color=colors)
+        ax.invert_yaxis()
+        for i, v in enumerate(values):
+            ax.text(v, i, " " + _safe(_fmt(v, block.get("format", "number"), currency)), va="center", fontsize=7)
+        ax.tick_params(labelsize=7)
+        ax.set_title(_safe(block.get("title") or ""), fontsize=9, loc="left", color="#1E1B4B")
+
+    return _chart_png(draw, 3.6, 2.3)
+
+
 class _ReportPDF:
     def __init__(self):
         from fpdf import FPDF
@@ -150,11 +220,14 @@ class _ReportPDF:
 def build_report_pdf(
     report: Dict[str, Any],
     breakdowns: Optional[Dict[str, List[Dict[str, Any]]]] = None,
-    insights: Optional[List[Dict[str, Any]]] = None
+    insights: Optional[List[Dict[str, Any]]] = None,
+    spec: Optional[Dict[str, Any]] = None
 ) -> bytes:
-    """Return the PDF bytes for a report."""
+    """Return the PDF bytes for a report. A client-defined spec replaces the standard sections it provides."""
     breakdowns = breakdowns or {}
     insights = insights or []
+    spec = spec or {}
+    currency = spec.get("currency") or "$"
     doc = _ReportPDF()
     pdf = doc.pdf
 
@@ -183,14 +256,28 @@ def build_report_pdf(
     ctr = clicks / impressions * 100 if impressions else 0
     p_ctr = p_clicks / p_imp * 100 if p_imp else 0
     kpis = [
-        ("AD SPEND", f"${spend:,.0f}", _pct_change(spend, p_spend), None),
-        ("LEADS", f"{leads:,.0f}", _pct_change(leads, p_leads), True),
-        ("COST PER LEAD", f"${cpl:,.2f}", _pct_change(cpl, p_cpl), False),
-        ("CTR", f"{ctr:.2f}%", _pct_change(ctr, p_ctr), True),
+        ("AD SPEND", f"${spend:,.0f}", _pct_change(spend, p_spend), None, ""),
+        ("LEADS", f"{leads:,.0f}", _pct_change(leads, p_leads), True, ""),
+        ("COST PER LEAD", f"${cpl:,.2f}", _pct_change(cpl, p_cpl), False, ""),
+        ("CTR", f"{ctr:.2f}%", _pct_change(ctr, p_ctr), True, ""),
     ]
-    box_w, gap, top = (doc.width - 9) / 4, 3, pdf.get_y()
-    for i, (label, value, delta, higher_good) in enumerate(kpis):
-        x = 14 + i * (box_w + gap)
+    if spec.get("kpis"):
+        kpis = []
+        for k in spec["kpis"]:
+            fmt, value, prev = k.get("format", "number"), _num(k.get("value")), k.get("prev")
+            if prev is None:
+                delta, unit = None, ""
+            elif fmt == "percent":
+                delta, unit = value - _num(prev), " pts"
+            else:
+                delta, unit = _pct_change(value, _num(prev)), "%"
+            kpis.append((_safe(k["label"]).upper()[:22], _safe(_fmt(value, fmt, currency)), delta, k.get("higher_is_better"), unit))
+
+    box_w, gap = (doc.width - 9) / 4, 3
+    for i, (label, value, delta, higher_good, unit) in enumerate(kpis):
+        if i % 4 == 0:
+            top = pdf.get_y() if i == 0 else top + 26
+        x = 14 + (i % 4) * (box_w + gap)
         pdf.set_fill_color(*LIGHT)
         pdf.rect(x, top, box_w, 22, style="F")
         pdf.set_xy(x + 3, top + 2.5)
@@ -206,14 +293,31 @@ def build_report_pdf(
         else:
             good = None if higher_good is None else ((delta >= 0) == higher_good)
             doc.font(7, True, SLATE if good is None else (GREEN if good else RED))
-            pdf.cell(box_w - 6, 4, f"{delta:+.1f}% vs previous")
+            pdf.cell(box_w - 6, 4, f"{delta:+.1f}{unit or '%'} vs previous")
     pdf.set_y(top + 26)
 
     # Charts
     weeks, channels = breakdowns.get("week") or [], breakdowns.get("channel") or []
-    if weeks:
+    if spec.get("trend"):
+        pdf.image(_custom_trend_chart(spec["trend"]), x=14, w=doc.width)
+    elif weeks:
         pdf.image(_weekly_chart(weeks), x=14, w=doc.width)
-    if channels:
+    custom_pair = [img for img in (
+        _labelled_donut(spec["split"], currency) if spec.get("split") else None,
+        _labelled_bars(spec["rankings"][0], currency) if spec.get("rankings") else None,
+        _labelled_bars(spec["rankings"][1], currency) if len(spec.get("rankings") or []) > 1 else None,
+    ) if img is not None]
+    if custom_pair:
+        half = (doc.width - 4) / 2
+        for start in range(0, len(custom_pair), 2):
+            y = pdf.get_y() + 2
+            if y + 58 > pdf.h - 15:
+                pdf.add_page()
+                y = pdf.get_y()
+            for j, img in enumerate(custom_pair[start:start + 2]):
+                pdf.image(img, x=14 + j * (half + 4), y=y, w=half)
+            pdf.set_y(y + half * 2.3 / 3.6 + 2)
+    elif channels:
         y = pdf.get_y() + 2
         if y + 58 > pdf.h - 15:
             pdf.add_page()
@@ -260,8 +364,27 @@ def build_report_pdf(
                 for value in cells:
                     row.cell(value)
 
-    table("Creative Performance", breakdowns.get("creative") or [], True)
-    table("Campaign Performance", breakdowns.get("campaign") or [], False)
+    if spec.get("table"):
+        t_spec = spec["table"]
+        cols = t_spec["columns"]
+        doc.section(t_spec.get("title") or "Breakdown")
+        doc.font(7.5, False, NAVY)
+        name_w = 46
+        other_w = (doc.width - name_w - 16) / max(len(cols), 1)
+        with pdf.table(col_widths=(name_w,) + (other_w,) * len(cols) + (16,), text_align="LEFT",
+                       line_height=5.2, borders_layout="HORIZONTAL_LINES") as t:
+            head = t.row()
+            for h in ["Name"] + [_safe(c["label"]) for c in cols] + ["Verdict"]:
+                head.cell(h)
+            for r in t_spec["rows"]:
+                row = t.row()
+                row.cell(_safe(r["name"]))
+                for c in cols:
+                    row.cell(_safe(_fmt(r["values"].get(c["key"]), c.get("format", "number"), currency)))
+                row.cell((r.get("verdict") or "").upper())
+    else:
+        table("Creative Performance", breakdowns.get("creative") or [], True)
+        table("Campaign Performance", breakdowns.get("campaign") or [], False)
 
     # Narrative
     if report.get("summary"):

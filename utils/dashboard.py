@@ -17,6 +17,8 @@ import streamlit as st
 from utils.ui import esc, get_plotly_layout, render_html
 
 PALETTE = ["#4F46E5", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444", "#0EA5E9", "#EC4899", "#64748B"]
+# Accent colours for KPI cards: no red, so a value never looks like bad news just because of its position
+KPI_ACCENTS = ["#4F46E5", "#10B981", "#8B5CF6", "#F59E0B", "#0EA5E9", "#EC4899", "#14B8A6", "#6366F1"]
 VERDICT_STYLE = {
     "scale": ("#ECFDF5", "#047857", "Scale"),
     "keep": ("#EEF2FF", "#4338CA", "Keep"),
@@ -357,7 +359,8 @@ def render_breakdown_tabs(breakdowns: Dict[str, List[Dict[str, Any]]]) -> None:
 # Claude's insights panel (replaces an in-app AI assistant: the app has no AI inside)
 # ------------------------------------------------------------------------------
 def render_insights_panel(report: Dict[str, Any], insights: List[Dict[str, Any]], weeks: List[Dict[str, Any]],
-                          client_view: bool = False) -> None:
+                          client_view: bool = False, context_value: Optional[str] = None,
+                          bar_values: Optional[List[float]] = None, bar_label: str = "Weekly leads") -> None:
     tone_style = {
         "positive": ("#ECFDF5", "#047857", "#A7F3D0"),
         "negative": ("#FEF2F2", "#B91C1C", "#FECACA"),
@@ -378,12 +381,12 @@ def render_insights_panel(report: Dict[str, Any], insights: List[Dict[str, Any]]
                 '<i>"Analyse this report\'s data and add key insights in ClientPulse."</i></div>')
 
     bars = ""
-    vals = [num(w.get("leads")) for w in weeks]
+    vals = bar_values if bar_values is not None else [num(w.get("leads")) for w in weeks]
     if vals:
         hi = max(vals) or 1
         bars = '<div class="cp-mini-bars">' + "".join(
-            f'<span style="height:{max(8, v / hi * 100):.0f}%; opacity:{0.45 + 0.55 * (i + 1) / len(vals):.2f};" title="{v:,.0f} leads"></span>'
-            for i, v in enumerate(vals)) + '</div><div class="cp-panel-sub" style="text-align:center;">Weekly leads</div>'
+            f'<span style="height:{max(8, v / hi * 100):.0f}%; opacity:{0.45 + 0.55 * (i + 1) / len(vals):.2f};" title="{v:,.0f}"></span>'
+            for i, v in enumerate(vals)) + f'</div><div class="cp-panel-sub" style="text-align:center;">{esc(bar_label)}</div>'
 
     k = report_kpis(report)
     if client_view:
@@ -408,7 +411,7 @@ def render_insights_panel(report: Dict[str, Any], insights: List[Dict[str, Any]]
             <div class="cp-assistant-body">
                 <div class="cp-context">Context:
                     <span class="cp-chip" style="background:#EEF2FF;color:#4338CA;">{esc(report.get('client_name'))}</span>
-                    <span class="cp-chip" style="background:#ECFDF5;color:#047857;">${k['spend']:,.0f}</span>
+                    <span class="cp-chip" style="background:#ECFDF5;color:#047857;">{esc(context_value if context_value is not None else f"${k['spend']:,.0f}")}</span>
                 </div>
                 {body}
                 {bars}
@@ -416,6 +419,173 @@ def render_insights_panel(report: Dict[str, Any], insights: List[Dict[str, Any]]
             </div>
         </div>
     """)
+
+
+# ------------------------------------------------------------------------------
+# Client-defined dashboard (custom KPI names, charts, and table from a spec)
+# ------------------------------------------------------------------------------
+def fmt_metric(value: Optional[float], fmt: str, currency: str = "$", compact: bool = False) -> str:
+    if value is None:
+        return "–"
+    v = float(value)
+    if fmt == "percent":
+        return f"{v:.1f}%"
+    if compact and abs(v) >= 10_000:
+        short = f"{v / 1_000_000:.2f}M" if abs(v) >= 1_000_000 else f"{v / 1_000:.1f}K"
+        return f"{currency}{short}" if fmt == "currency" else short
+    if fmt == "currency":
+        return f"{currency}{v:,.2f}" if abs(v) < 100 else f"{currency}{v:,.0f}"
+    if fmt == "decimal" or (v != int(v) and abs(v) < 100):
+        return f"{v:,.2f}"
+    return f"{v:,.0f}"
+
+
+def _change_html(value: float, prev: Optional[float], fmt: str, higher_good: Optional[bool]) -> str:
+    if prev is None:
+        return '<div class="cp-kpi-delta cp-delta-neutral">No previous period</div>'
+    if fmt == "percent":
+        diff, unit = value - prev, " pts"
+    elif prev:
+        diff, unit = (value - prev) / abs(prev) * 100, "%"
+    else:
+        return '<div class="cp-kpi-delta cp-delta-neutral">No previous period</div>'
+    good = None if higher_good is None else ((diff >= 0) == higher_good)
+    cls = "cp-delta-neutral" if good is None else ("cp-delta-positive" if good else "cp-delta-negative")
+    return f'<div class="cp-kpi-delta {cls}">{"▲" if diff >= 0 else "▼"} {diff:+.1f}{unit} vs prev</div>'
+
+
+def render_custom_kpis(kpis: List[Dict[str, Any]], currency: str) -> None:
+    for start in range(0, len(kpis), 4):
+        chunk = kpis[start:start + 4]
+        cols = st.columns(4)
+        for i, (col, k) in enumerate(zip(cols, chunk)):
+            accent = KPI_ACCENTS[(start + i) % len(KPI_ACCENTS)]
+            prev, value = k.get("prev"), num(k.get("value"))
+            bar = 100 if not prev else max(8, min(100, 50 + (value - prev) / abs(prev) * 100))
+            with col:
+                render_html(f"""
+                    <div class="cp-kpi" style="--accent:{accent};">
+                        <div class="cp-kpi-label">{esc(k['label'])}</div>
+                        <div class="cp-kpi-value" style="color:{accent};">{esc(fmt_metric(value, k.get('format', 'number'), currency, compact=True))}</div>
+                        <div class="cp-kpi-bar"><span style="width:{bar:.0f}%;"></span></div>
+                        {_change_html(value, prev, k.get('format', 'number'), k.get('higher_is_better'))}
+                    </div>
+                """)
+
+
+def render_custom_trend(trend: Dict[str, Any], currency: str) -> None:
+    _panel_title(trend.get("title") or "Trend", " vs ".join(s["name"] for s in trend["series"]))
+    fig = go.Figure()
+    has_right = any(s.get("axis") == "right" for s in trend["series"])
+    for i, se in enumerate(trend["series"]):
+        right = se.get("axis") == "right"
+        color = PALETTE[i]
+        prefix = currency if se.get("format") == "currency" else ""
+        suffix = "%" if se.get("format") == "percent" else ""
+        fig.add_trace(go.Scatter(
+            x=trend["x"], y=se["values"], name=se["name"], yaxis="y2" if right else "y",
+            mode="lines+markers" if not right else "lines",
+            line=dict(color=color, width=3 if not right else 2, dash="dash" if right else "solid", shape="spline"),
+            marker=dict(size=8, color="#FFFFFF", line=dict(color=color, width=2)),
+            fill="tozeroy" if i == 0 else None, fillcolor="rgba(79,70,229,0.08)",
+            hovertemplate=f"%{{x}}<br><b>{prefix}%{{y:,.2f}}{suffix}</b><extra>{esc(se['name'])}</extra>",
+        ))
+    layout = get_plotly_layout("", height=290)
+    layout["margin"] = {"l": 45, "r": 55 if has_right else 20, "t": 30, "b": 30}
+    layout["yaxis"] = {"gridcolor": "#F1F5F9", "zeroline": False, "tickfont": {"size": 10}}
+    if has_right:
+        layout["yaxis2"] = {"overlaying": "y", "side": "right", "showgrid": False, "tickfont": {"size": 10, "color": PALETTE[1]}}
+    # Category axis: labels like "2026-07" are shown exactly as given instead of being parsed as dates
+    layout["xaxis"] = {"type": "category", "tickangle": 0, "tickfont": {"size": 10}, "showgrid": False}
+    layout["legend"] = {"orientation": "h", "yanchor": "bottom", "y": 1.0, "xanchor": "right", "x": 1, "font": {"size": 11}}
+    layout["hovermode"] = "x unified"
+    fig.update_layout(layout)
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+
+
+def render_custom_split(split: Dict[str, Any], currency: str) -> None:
+    _panel_title(split.get("title") or "Split", "Share of total")
+    fig = go.Figure(go.Pie(
+        labels=split["labels"], values=split["values"], hole=0.64, sort=False,
+        marker=dict(colors=PALETTE[:len(split["labels"])], line=dict(color="#FFFFFF", width=2)),
+        texttemplate="%{percent:.0%}", textposition="inside", insidetextorientation="horizontal",
+        insidetextfont=dict(color="#FFFFFF", size=11),
+        hovertemplate="%{label}<br><b>%{value:,.2f}</b> (%{percent})<extra></extra>",
+    ))
+    total = sum(split["values"])
+    fig.add_annotation(text=f"<b>{esc(fmt_metric(total, split.get('format', 'number'), currency, compact=True))}</b>"
+                            f"<br><span style='font-size:10px;color:#94A3B8'>total</span>",
+                       showarrow=False, font=dict(size=15, color="#1E1B4B"))
+    layout = get_plotly_layout("", height=290)
+    layout["margin"] = {"l": 10, "r": 10, "t": 20, "b": 10}
+    layout["legend"] = {"orientation": "v", "x": 1.0, "y": 0.5, "font": {"size": 11}}
+    layout["uniformtext"] = {"minsize": 10, "mode": "hide"}
+    fig.update_layout(layout)
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+
+
+def render_ranking(ranking: Dict[str, Any], currency: str, dot: str) -> None:
+    pairs = list(zip(ranking["labels"], ranking["values"]))
+    higher_good = ranking.get("higher_is_better")
+    pairs.sort(key=lambda p: p[1], reverse=higher_good is not False)
+    top = max((abs(v) for _, v in pairs), default=1) or 1
+    rows = []
+    for i, (name, value) in enumerate(pairs):
+        color = "#10B981" if i == 0 else ("#EF4444" if i == len(pairs) - 1 and len(pairs) > 1 else "#6366F1")
+        rows.append(f"""
+            <div class="cp-bar-row">
+                <span class="cp-bar-name">{esc(name)}</span>
+                <span class="cp-bar-track"><span style="width:{max(6, abs(value) / top * 100):.0f}%; background:{color};"></span></span>
+                <span class="cp-bar-val">{esc(fmt_metric(value, ranking.get('format', 'number'), currency))}</span>
+            </div>""")
+    render_html(f"""
+        <div class="cp-panel">
+            <div class="cp-panel-title"><span class="cp-dot" style="background:{dot}"></span>{esc(ranking.get('title') or 'Ranking')}</div>
+            {''.join(rows)}
+        </div>
+    """)
+
+
+def render_series_sparklines(trend: Dict[str, Any], currency: str) -> None:
+    parts = []
+    for se in trend["series"]:
+        vals = se["values"]
+        if len(vals) < 2:
+            continue
+        fmt = se.get("format", "number")
+        change = (vals[-1] - vals[0]) if fmt == "percent" else pct_change(vals[-1], vals[0])
+        higher_good = se.get("higher_is_better", True)
+        if change is None:
+            cls, color, txt = "cp-delta-neutral", "#64748B", "–"
+        else:
+            good = None if higher_good is None else ((change >= 0) == higher_good)
+            cls = "cp-delta-neutral" if good is None else ("cp-delta-positive" if good else "cp-delta-negative")
+            color = {"cp-delta-neutral": "#6366F1", "cp-delta-positive": "#10B981", "cp-delta-negative": "#EF4444"}[cls]
+            txt = f"{change:+.1f} pts" if fmt == "percent" else f"{change:+.0f}%"
+        parts.append(f"""
+            <div class="cp-spark-row" style="grid-template-columns: 5.5rem 1fr 3.6rem;">
+                <span class="cp-bar-name">{esc(se['name'])}</span>
+                {_sparkline(vals, color)}
+                <span class="cp-spark-val {cls}">{txt}</span>
+            </div>""")
+    render_html(f"""
+        <div class="cp-panel">
+            <div class="cp-panel-title"><span class="cp-dot" style="background:#8B5CF6"></span>Trends ({esc(trend['x'][0])} → {esc(trend['x'][-1])})</div>
+            {''.join(parts) or '<div class="cp-empty">Needs at least two points.</div>'}
+        </div>
+    """)
+
+
+def custom_table_html(table: Dict[str, Any], currency: str) -> str:
+    cols = table["columns"]
+    head = "<th>Name</th>" + "".join(f"<th>{esc(c['label'])}</th>" for c in cols) + "<th>Verdict</th><th>Note</th>"
+    body = []
+    for r in table["rows"]:
+        cells = "".join(f"<td>{esc(fmt_metric(r['values'].get(c['key']), c.get('format', 'number'), currency))}</td>" for c in cols)
+        body.append(f"<tr><td><b>{esc(r['name'])}</b></td>{cells}<td>{_verdict_chip(r.get('verdict'))}</td>"
+                    f"<td class='cp-note'>{esc(r.get('note') or '')}</td></tr>")
+    return (f'<div class="cp-panel-title" style="margin:0.4rem 0 0.5rem;"><span class="cp-dot" style="background:#4F46E5"></span>{esc(table["title"])}</div>'
+            f'<div class="cp-table-wrap"><table class="cp-table"><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>')
 
 
 def render_narrative(report: Dict[str, Any]) -> None:
@@ -430,10 +600,16 @@ def render_narrative(report: Dict[str, Any]) -> None:
 
 def render_dashboard_body(report: Dict[str, Any], breakdowns: Dict[str, List[Dict[str, Any]]],
                           insights: List[Dict[str, Any]], show_insights: bool = True, key_suffix: str = "main",
-                          client_view: bool = False) -> None:
-    """Full dashboard layout below the header: KPIs, charts, tables, narrative, insights."""
+                          client_view: bool = False, spec: Optional[Dict[str, Any]] = None) -> None:
+    """
+    Full dashboard layout. Each section uses the client-defined spec when it provides one,
+    otherwise the standard ad-performance layout (spend, leads, CPL, CTR).
+    """
+    spec = spec or {}
+    currency = spec.get("currency") or "$"
     weeks = breakdowns.get("week") or []
     channels = breakdowns.get("channel") or []
+    trend, split, rankings = spec.get("trend"), spec.get("split"), spec.get("rankings") or []
 
     if show_insights:
         main, side = st.columns([2.35, 1], gap="medium")
@@ -441,24 +617,58 @@ def render_dashboard_body(report: Dict[str, Any], breakdowns: Dict[str, List[Dic
         main, side = st.container(), None
 
     with main:
-        render_kpi_cards(report)
+        if spec.get("kpis"):
+            render_custom_kpis(spec["kpis"], currency)
+        else:
+            render_kpi_cards(report)
+
         c1, c2 = st.columns([1.55, 1], gap="small")
         with c1:
             with st.container(border=True, key=f"cp_card_trend_{key_suffix}"):
-                render_trend_chart(weeks, report)
+                if trend:
+                    render_custom_trend(trend, currency)
+                else:
+                    render_trend_chart(weeks, report)
         with c2:
             with st.container(border=True, key=f"cp_card_donut_{key_suffix}"):
-                render_channel_donut(channels)
+                if split:
+                    render_custom_split(split, currency)
+                else:
+                    render_channel_donut(channels)
+
         b1, b2, b3 = st.columns(3, gap="small")
+        custom_bottom = bool(rankings or trend)
         with b1:
-            render_funnel(report)
+            if rankings:
+                render_ranking(rankings[0], currency, "#4F46E5")
+            elif not custom_bottom:
+                render_funnel(report)
         with b2:
-            render_cpl_by_channel(channels)
+            if len(rankings) > 1:
+                render_ranking(rankings[1], currency, "#10B981")
+            elif not custom_bottom:
+                render_cpl_by_channel(channels)
         with b3:
-            render_weekly_trends(weeks)
-        render_breakdown_tabs(breakdowns)
+            if trend:
+                render_series_sparklines(trend, currency)
+            elif not custom_bottom:
+                render_weekly_trends(weeks)
+
+        if spec.get("table"):
+            render_html(custom_table_html(spec["table"], currency))
+        else:
+            render_breakdown_tabs(breakdowns)
         render_narrative(report)
 
     if side is not None:
         with side:
-            render_insights_panel(report, insights, weeks, client_view=client_view)
+            if spec.get("kpis") or trend:
+                first = spec["kpis"][0] if spec.get("kpis") else None
+                context = (f"{first['label']}: {fmt_metric(first['value'], first.get('format', 'number'), currency, compact=True)}"
+                           if first else "")
+                series = trend["series"][0] if trend else None
+                render_insights_panel(report, insights, weeks, client_view=client_view, context_value=context,
+                                      bar_values=series["values"] if series else [],
+                                      bar_label=series["name"] if series else "")
+            else:
+                render_insights_panel(report, insights, weeks, client_view=client_view)

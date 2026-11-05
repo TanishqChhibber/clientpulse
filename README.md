@@ -207,6 +207,7 @@ ClientPulse exposes **6 core tools** over Streamable HTTP transport:
 | `publish_report` | `report_id` | Marks report published and returns public share URL |
 | `set_report_breakdown` | `report_id`, optional `channels`, `campaigns`, `creatives`, `weekly`, `key_insights` | Fills the dashboard's channel split, creative/campaign tables (with Scale/Keep/Cut verdicts), weekly trends and insights panel |
 | `get_report` | `report_id` | Returns a report with its breakdowns and insights so Claude can review or refine it |
+| `set_custom_dashboard` | `report_id`, `currency`, optional `kpis`, `trend`, `split`, `rankings`, `table`, `reset` | Builds the dashboard around the client's own metrics (e.g. LDAU, ARPU in ₹, D30 retention) instead of ad spend and leads |
 
 ---
 
@@ -289,9 +290,9 @@ python run.py test
 
 Expected output:
 ```
-...........
+.............
 ----------------------------------------------------------------------
-Ran 11 tests in 1.2s
+Ran 13 tests in 1.3s
 
 OK
 ```
