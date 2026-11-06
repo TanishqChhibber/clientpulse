@@ -617,7 +617,30 @@ def render_dashboard_body(report: Dict[str, Any], breakdowns: Dict[str, List[Dic
     else:
         main, side = st.container(), None
 
+    # A report with no ad numbers and no client-defined layout has nothing to chart: say so
+    # instead of showing $0 cards and empty charts (e.g. reports made before custom KPIs existed).
+    no_metrics = (not spec and not any(breakdowns.get(d) for d in ("channel", "campaign", "creative", "week"))
+                  and all(num(report.get(f)) == 0 for f in ("spend", "impressions", "clicks", "leads")))
+
     with main:
+        if no_metrics:
+            render_html(f"""
+                <div class="cp-panel" style="min-height:0; border-left:4px solid #F59E0B;">
+                    <div class="cp-panel-title">No KPIs on this report yet</div>
+                    <p class="cp-prose-p" style="margin-top:0.4rem;">
+                        This report only has written analysis, so there is nothing to chart.
+                        {"To get KPI cards and charts for your own metrics, upload the data in this brand's "
+                         "<b>Data &amp; template</b> panel, then ask Claude: <i>“Build this report from the uploaded "
+                         "data in ClientPulse.”</i>" if not client_view else ""}
+                    </p>
+                </div>
+            """)
+            render_narrative(report)
+            if side is not None:
+                with side:
+                    render_insights_panel(report, insights, weeks, client_view=client_view,
+                                          context_value="", bar_values=[], bar_label="")
+            return
         if spec.get("kpis"):
             render_custom_kpis(spec["kpis"], currency)
         else:
